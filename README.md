@@ -14,7 +14,7 @@ This web application is a personalized language learning tool designed to help u
 
 The application is built with Python and the Flask web framework. The project is organized into several key directories:
 
-
+```bash
 /
 |-- app.py              # Main Flask application entry point
 |-- routes/             # Contains Flask blueprints for different sections
@@ -32,7 +32,7 @@ The application is built with Python and the Flask web framework. The project is
 |-- static/             # CSS, JavaScript, and other static assets
 |-- uploads/            # Directory for temporary file uploads (audio, images)
 |-- README.md           # This file
-
+```
 
 ## Technical Stack
 
