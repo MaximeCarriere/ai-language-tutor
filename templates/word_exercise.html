@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+    <title>Word Exercises</title>
+    <style>
+        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+        .section { border: 1px solid #ccc; padding: 16px; margin-bottom: 24px; border-radius: 8px; text-align: center; }
+        .image-container { margin-bottom: 16px; }
+        .image-container img { max-width: 300px; height: auto; border-radius: 8px; border: 1px solid #ddd; }
+        .choices { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+        .choice-btn { padding: 12px 20px; cursor: pointer; border-radius: 6px; border: 1px solid #444; background: #f0f0f0; font-size: 1.1em; }
+        .choice-btn.correct { background: #c8f7c5; border-color: #2e7d32; }
+        .choice-btn.wrong { background: #f7c5c5; border-color: #c62828; }
+        .feedback { margin-top: 16px; font-weight: 600; font-size: 1.2em; }
+        .next-link { display: none; margin-top: 12px; padding: 8px 16px; background: #4477cc; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Word Exercises (Level C)</h1>
+    <a href="/">← Home</a>
+
+    <div class="section">
+        <h2>What is this?</h2>
+        <div class="image-container">
+            <img src="{{ exercise.image_url }}" alt="Object to identify">
+        </div>
+        <div class="choices" data-correct-word="{{ exercise.correct_word | lower }}">
+            {% for choice in exercise.choices %}
+                <button class="choice-btn">{{ choice }}</button>
+            {% endfor %}
+        </div>
+        <div class="feedback" aria-live="polite"></div>
+        <a href="/word_exercise" class="next-link">Next →</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const choicesContainer = document.querySelector('.choices');
+            const correctWord = choicesContainer.dataset.correctWord;
+            const feedbackEl = document.querySelector('.feedback');
+            const nextLink = document.querySelector('.next-link');
+
+            choicesContainer.addEventListener('click', (event) => {
+                if (event.target.classList.contains('choice-btn')) {
+                    const selectedWord = event.target.textContent.toLowerCase();
+                    const allButtons = choicesContainer.querySelectorAll('.choice-btn');
+
+                    // Disable all buttons after a choice is made
+                    allButtons.forEach(btn => btn.disabled = true);
+
+                    if (selectedWord === correctWord) {
+                        event.target.classList.add('correct');
+                        feedbackEl.textContent = '✅ Correct!';
+                        feedbackEl.style.color = 'green';
+                    } else {
+                        event.target.classList.add('wrong');
+                        feedbackEl.textContent = `❌ That's a "${selectedWord}". Try the next one!`;
+                        feedbackEl.style.color = 'red';
+                        // Highlight the correct answer
+                        allButtons.forEach(btn => {
+                            if (btn.textContent.toLowerCase() === correctWord) {
+                                btn.classList.add('correct');
+                            }
+                        });
+                    }
+                    // Show the "Next" button
+                    nextLink.style.display = 'inline-block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

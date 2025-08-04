@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+    <title>Word Lesson: {{ lesson.word }}</title>
+    <style>
+        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+        .lesson-container { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; border: 1px solid #ccc; padding: 24px; border-radius: 8px; }
+        .image-container { flex: 1; min-width: 250px; text-align: center; }
+        .image-container img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd; }
+        .details-container { flex: 2; min-width: 300px; }
+        .details-container h1 { margin-top: 0; font-size: 3em; }
+        .details-container p { font-size: 1.2em; line-height: 1.6; }
+        .syllables { color: #555; font-style: italic; }
+        .actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn { padding: 12px 20px; cursor: pointer; border-radius: 6px; border: 1px solid #444; font-size: 1.1em; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #007bff; color: white; border-color: #007bff; }
+        .btn-secondary { background: #6c757d; color: white; border-color: #6c757d; }
+        .btn-success { background: #28a745; color: white; border-color: #28a745; }
+    </style>
+</head>
+<body>
+    <h1>Word Lesson (Level B)</h1>
+    <a href="/">← Home</a>
+
+    <div class="lesson-container" style="margin-top: 20px;">
+        <div class="image-container">
+            <img src="{{ lesson.image_url }}" alt="Image of {{ lesson.word }}">
+        </div>
+        <div class="details-container">
+            <h1>{{ lesson.word }}</h1>
+            <p class="syllables">{{ lesson.syllables }}</p>
+            <p><strong>Meaning:</strong> {{ lesson.meaning }}</p>
+            <p><em>"{{ lesson.example_sentence }}"</em></p>
+
+            <div class="actions">
+                <button class="btn btn-primary" onclick="speakText('{{ lesson.word }}')">Hear the Word</button>
+                <a href="/word_lesson" class="btn btn-secondary">Next Word →</a>
+                <a href="/word_exercise" class="btn btn-success">Practice Exercises</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function speakText(text) {
+            if (!text) return;
+            if ('speechSynthesis' in window) {
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'en-US';
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utter);
+            } else {
+                alert("Text-to-speech is not supported in your browser.");
+            }
+        }
+    </script>
+</body>
+</html>

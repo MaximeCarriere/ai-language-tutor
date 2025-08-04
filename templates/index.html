@@ -3,13 +3,12 @@
   <head>
     <title>Pocket Tutor</title>
     <style>
-      .status {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-size: 0.9em;
-        margin-right: 8px;
-      }
+      body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+      ul { list-style: none; padding-left: 0; }
+      li { margin: 12px 0; }
+      a { font-size: 1.1em; text-decoration: none; color: #005a9c; }
+      a:hover { text-decoration: underline; }
+      .status { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.9em; margin-right: 8px; }
       .ok { background: #d1ffe0; color: #006644; }
       .warn { background: #fff7cc; color: #665500; }
       .bad { background: #ffe0e0; color: #aa0000; }
@@ -20,28 +19,24 @@
 
     <div>
       <span class="status {% if ollama_up and gemma_ok %}ok{% elif ollama_up %}warn{% else %}bad{% endif %}">
-        {% if ollama_up %}
-          Ollama: up
-        {% else %}
-          Ollama: down
-        {% endif %}
+        {% if ollama_up %} Ollama: up {% else %} Ollama: down {% endif %}
       </span>
       <span class="status {% if gemma_ok %}ok{% else %}warn{% endif %}">
-        {% if gemma_ok %}
-          Gemma 3n: responsive
-        {% else %}
-          Gemma 3n: warming / unavailable
-        {% endif %}
+        {% if gemma_ok %} Gemma 3n: responsive {% else %} Gemma 3n: warming / unavailable {% endif %}
       </span>
     </div>
 
+    <h2 style="margin-top: 24px;">Learning Levels</h2>
     <ul>
       <li><a href="/letter">Letter Practice (Level A)</a></li>
+      <li><a href="/word_lesson">Word Lessons (Level B)</a></li>
+      <li><a href="/word_exercise">Word Exercises (Level C)</a></li>
+      <hr style="margin: 16px 0; border: 0; border-top: 1px solid #ccc;">
       <li><a href="/vocab">Vocabulary &amp; Pronunciation</a></li>
       <li><a href="/describe">Describe a Picture</a></li>
       <li><a href="/math">Basic Math</a></li>
     </ul>
 
-    <p>Offline-first, private, powered by Gemma 3n running locally via Ollama.</p>
+    <p style="margin-top: 24px; color: #555;">Offline-first, private, powered by Gemma 3n running locally via Ollama.</p>
   </body>
 </html>

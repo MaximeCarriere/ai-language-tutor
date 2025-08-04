@@ -16,19 +16,21 @@ def create_app():
     from routes.letter import bp as letter_bp
     from routes.letter_lesson import bp as lesson_bp
     from routes.letter_exercises import letter_exercises_bp
+    from routes.word_lesson import bp as word_lesson_bp
+    from routes.word_exercise import bp as word_exercise_bp # <-- ADD THIS
 
-    app.register_blueprint(home_bp)  # root
+    app.register_blueprint(home_bp)
     app.register_blueprint(vocab_bp, url_prefix="/vocab")
     app.register_blueprint(describe_bp, url_prefix="/describe")
     app.register_blueprint(math_bp, url_prefix="/math")
     app.register_blueprint(letter_bp, url_prefix="/letter")
     app.register_blueprint(lesson_bp, url_prefix="/letter_lesson")
-    app.register_blueprint(letter_exercises_bp, url_prefix="/letter_exercise")  # makes /letter_exercise
+    app.register_blueprint(letter_exercises_bp, url_prefix="/letter_exercise")
+    app.register_blueprint(word_lesson_bp, url_prefix="/word_lesson")
+    app.register_blueprint(word_exercise_bp, url_prefix="/word_exercise") # <-- AND THIS
 
     return app
 
-
 if __name__ == "__main__":
     app = create_app()
-    print(app.url_map)
     app.run(debug=True)

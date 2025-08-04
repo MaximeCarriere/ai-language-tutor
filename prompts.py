@@ -305,3 +305,26 @@ Learner attempt: "{learner_attempt}"
 Respond with JSON only.
 """
     return template.strip()
+
+
+def build_word_level_prompt(word, learner_attempt=None):
+    """Builds a prompt for word-level practice."""
+    instruction = (
+        "You are a helpful literacy tutor. Analyze the following word and provide feedback in a JSON object. "
+        "The word to analyze is: '{}'.\n".format(word)
+    )
+
+    if learner_attempt:
+        instruction += "The learner's pronunciation attempt is: '{}'. Provide feedback on it.\n".format(learner_attempt)
+    else:
+        instruction += "No pronunciation attempt was provided.\n"
+
+    instruction += (
+        "Your JSON response should include these keys:\n"
+        "- 'correct_spelling': The correct spelling of the word.\n"
+        "- 'pronunciation_guide': A simple, phonetic guide to pronouncing the word (e.g., 'ap-pel').\n"
+        "- 'meaning': A brief, easy-to-understand definition.\n"
+        "- 'example_sentence': A simple sentence using the word.\n"
+        "- 'feedback': Constructive feedback for the learner."
+    )
+    return instruction
