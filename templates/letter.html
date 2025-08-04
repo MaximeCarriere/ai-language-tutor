@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Letter Practice</title>
+    <style>
+      .alphabet {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 16px;
+      }
+      .letter-box {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #333;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-weight: bold;
+        user-select: none;
+        transition: background .2s, border-color .2s;
+      }
+      .letter-box.selected {
+        background: #ddeeff;
+        border-color: #4477cc;
+      }
+      .lesson-link {
+        margin-top: 12px;
+        display: inline-block;
+        padding: 6px 12px;
+        background: #4477cc;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .lesson-link:hover {
+        background: #335fa3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Letter Level (A)</h1>
+    <a href="/">← Home</a>
+
+    <!-- Lesson launch -->
+    <div style="margin:12px 0;">
+      <a id="start-lesson" class="lesson-link" href="/letter_lesson?letter={{ letter }}">Start full lesson on "{{ letter }}"</a>
+    </div>
+
+    <!-- Alphabet panel -->
+    <div>
+      <h2>Alphabet</h2>
+      <div class="alphabet" id="alphabet">
+        {% for ch in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+          <div class="letter-box" data-letter="{{ ch }}">{{ ch }}</div>
+        {% endfor %}
+      </div>
+      <p>Click a letter to hear its sound (via Gemma + TTS) and select it for practice or lesson.</p>
+    </div>
+
+    <!-- Practice form -->
+    <form method="post">
+      <div>
+        <label>Letter:</label>
+        <input id="letter-input" name="letter" value="{{ letter }}" maxlength="1" size="2">
+      </div>
+      <div>
+        <label>Your attempt (type letter or sound):</label><br>
+        <input name="attempt" value="{{ attempt }}">
+      </div>
+      <div style="margin-top:8px;">
+        <button type="submit">Practice</button>
+      </div>
+    </form>
+
+    {% if structured %}
+      <h2>Feedback</h2>
+      <pre>{{ structured | tojson(indent=2) }}</pre>
+    {% elif raw %}
+      <h2>Raw Output</h2>
+      <pre>{{ raw }}</pre>
+    {% endif %}
+
+    <script>
+      const alphabetDiv = document.getElementById("alphabet");
+      const letterInput = document.getElementById("letter-input");
+      const startLessonLink = document.getElementById("start-lesson");
+
+      function updateLessonLink(letter) {
+        startLessonLink.href = `/letter_lesson?letter=${encodeURIComponent(letter)}`;
+        startLessonLink.textContent = `Start full lesson on "${letter}"`;
+      }
+
+      async function fetchPronunciation(letter) {
+        try {
+          const resp = await fetch(`/letter_sound?letter=${letter}`);
+          const data = await resp.json();
+          return data.speak_text;
+        } catch (e) {
+          console.warn("Failed to fetch pronunciation:", e);
+          return `The letter ${letter}.`;
+        }
+      }
+
+      alphabetDiv.querySelectorAll(".letter-box").forEach(box => {
+        const letter = box.dataset.letter;
+        box.addEventListener("click", async () => {
+          // Visual selection
+          document.querySelectorAll(".letter-box").forEach(b => b.classList.remove("selected"));
+          box.classList.add("selected");
+          // Update input & lesson link
+          if (letterInput) letterInput.value = letter;
+          updateLessonLink(letter);
+
+          // Fetch and speak via TTS
+          const speakText = await fetchPronunciation(letter);
+          if ('speechSynthesis' in window) {
+            const utter = new SpeechSynthesisUtterance(speakText);
+            utter.lang = 'en-US';
+            window.speechSynthesis.speak(utter);
+          } else {
+            console.log("Gemma says:", speakText);
+          }
+        });
+      });
+
+      // If letter input changes manually, sync the lesson link
+      letterInput?.addEventListener("input", () => {
+        const val = letterInput.value.trim().toUpperCase().slice(0,1) || "A";
+        updateLessonLink(val);
+        // Highlight corresponding letter box
+        document.querySelectorAll(".letter-box").forEach(b => {
+          b.classList.toggle("selected", b.dataset.letter === val);
+        });
+      });
+
+      // Initialize selection on load
+      (() => {
+        const initial = "{{ letter | default('A') }}".toUpperCase();
+        updateLessonLink(initial);
+        document.querySelectorAll(".letter-box").forEach(b => {
+          if (b.dataset.letter === initial) b.classList.add("selected");
+        });
+      })();
+    </script>
+  </body>
+</html>

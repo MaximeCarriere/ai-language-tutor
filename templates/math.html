@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head><title>Math Practice</title></head>
+  <body>
+    <h1>Basic Math</h1>
+    <a href="/">← Home</a>
+    <form method="post" enctype="multipart/form-data">
+      <div>
+        <label>Image (objects to count):</label><br>
+        <input type="file" name="image">
+      </div>
+      <div>
+        <label>Question:</label><br>
+        <input type="text" name="question" placeholder="e.g., How many? If I add 2 more, how many?">
+      </div>
+      <div>
+        <button type="submit">Ask</button>
+      </div>
+    </form>
+
+    {% if structured %}
+      <h2>Result</h2>
+      <pre>{{ structured | tojson(indent=2) }}</pre>
+    {% elif raw %}
+      <h2>Raw Output</h2>
+      <pre>{{ raw }}</pre>
+    {% endif %}
+  </body>
+</html>

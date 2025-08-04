@@ -1,0 +1,6 @@
+{
+  "A": {"sound": "/æ/", "example_word": "apple"},
+  "B": {"sound": "/b/", "example_word": "ball"},
+  "C": {"sound": "/k/", "example_word": "cat"},
+  "D": {"sound": "/d/", "example_word": "dog"}
+}

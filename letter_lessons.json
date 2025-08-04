@@ -1,0 +1,36 @@
+{
+  "A": {
+    "intro": "Today we're learning the letter A. It makes several sounds in English like /æ/ as in apple, /eɪ/ as in cake, and /ə/ in about. You'll see it in different shapes, hear its sounds, and practice with words.",
+    "fonts": ["serif", "sans-serif", "cursive"],
+    "all_phonemes": [
+      { "symbol": "/æ/", "example": "apple" },
+      { "symbol": "/eɪ/", "example": "cake" },
+      { "symbol": "/ɑː/", "example": "father" },
+      { "symbol": "/ɔː/", "example": "call" },
+      { "symbol": "/ə/", "example": "about" },
+      { "symbol": "/ɒ/", "example": "mall" }
+    ],
+    "phonemes": [
+      { "symbol": "/æ/", "example": "apple" },
+      { "symbol": "/eɪ/", "example": "say" },
+      { "symbol": "/ə/", "example": "about" }
+    ],
+    "words": [
+      {
+        "word": "apple",
+        "example_sentence": "I eat an apple.",
+        "phonemes": ["/æ/", "/p/", "/əl/"]
+      },
+      {
+        "word": "ant",
+        "example_sentence": "An ant is small.",
+        "phonemes": ["/æ/", "/n/", "/t/"]
+      },
+      {
+        "word": "arrow",
+        "example_sentence": "The arrow points.",
+        "phonemes": ["/æ/", "/r/", "/oʊ/"]
+      }
+    ]
+  }
+}
