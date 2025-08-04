@@ -328,3 +328,20 @@ def build_word_level_prompt(word, learner_attempt=None):
         "- 'feedback': Constructive feedback for the learner."
     )
     return instruction
+    
+    
+def build_letter_drawing_prompt():
+    """Builds a prompt for analyzing a user's drawing of a letter."""
+    return (
+        "You are an expert handwriting analyst. Your task is to identify a single uppercase letter from an image. "
+        "Your response MUST follow this format exactly:\n"
+        "1. Start with the heading 'DESCRIPTION:' and then write a one-sentence description of the basic strokes and shapes in the image.\n"
+        "2. On a new line, provide a single, valid JSON object with the following keys:\n"
+        "- 'recognized_letter': A string with your single best guess for the uppercase letter.\n"
+        "- 'feedback': A string containing a constructive tip based on the shapes you saw."
+    )
+
+
+
+
+

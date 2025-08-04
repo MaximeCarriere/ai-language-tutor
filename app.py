@@ -17,7 +17,8 @@ def create_app():
     from routes.letter_lesson import bp as lesson_bp
     from routes.letter_exercises import letter_exercises_bp
     from routes.word_lesson import bp as word_lesson_bp
-    from routes.word_exercise import bp as word_exercise_bp # <-- ADD THIS
+    from routes.word_exercise import bp as word_exercise_bp
+    from routes.letter_drawing import bp as letter_drawing_bp # <-- ADD THIS
 
     app.register_blueprint(home_bp)
     app.register_blueprint(vocab_bp, url_prefix="/vocab")
@@ -27,7 +28,8 @@ def create_app():
     app.register_blueprint(lesson_bp, url_prefix="/letter_lesson")
     app.register_blueprint(letter_exercises_bp, url_prefix="/letter_exercise")
     app.register_blueprint(word_lesson_bp, url_prefix="/word_lesson")
-    app.register_blueprint(word_exercise_bp, url_prefix="/word_exercise") # <-- AND THIS
+    app.register_blueprint(word_exercise_bp, url_prefix="/word_exercise")
+    app.register_blueprint(letter_drawing_bp, url_prefix="/letter_drawing") # <-- AND THIS
 
     return app
 
