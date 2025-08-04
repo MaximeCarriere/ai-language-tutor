@@ -1,29 +1,65 @@
-from flask import Blueprint, render_template, request
+import json
+from flask import Blueprint, render_template, request, jsonify
 from services.ollama import call_gemma_cli
-from persistence.lessons import load_letter_info
 from persistence.progress import log_vocab_attempt
 from prompts import build_letter_prompt
-import os
+# Import both helpers from the 'languages' module
+from languages import get_lang_config, get_translations
 
 bp = Blueprint("letter", __name__, template_folder="../templates")
 
 @bp.route("", methods=["GET", "POST"])
-def letter():
+def letter_practice():
+    # Get language from URL query, default to English
+    lang_code = request.args.get('lang', 'en')
+    
+    # Get the language-specific configuration (alphabet, font, etc.)
+    lang_config = get_lang_config(lang_code)
+    
+    # Get the language-specific translations for UI text
+    translations = get_translations(lang_code)
+
     structured = None
     raw = None
-    letter = request.form.get("letter", "A").upper()
-    attempt = request.form.get("attempt", "").strip()
-    sound, example_word = load_letter_info(letter)
+    
+    # The initial letter to show, from the language's alphabet
+    initial_letter = lang_config['alphabet'][0]
+
     if request.method == "POST":
-        prompt = build_letter_prompt(letter, learner_attempt=attempt if attempt else None)
+        letter = request.form.get("letter", initial_letter)
+        attempt = request.form.get("attempt", "").strip()
+        
+        # Make the AI prompt language-aware
+        prompt = build_letter_prompt(letter, lang_config['name'], learner_attempt=attempt)
         raw = call_gemma_cli(prompt)
         try:
             structured = json.loads(raw.strip().split("\n")[-1])
         except Exception:
             structured = {"error": raw}
-        if "sound" not in structured or not structured.get("sound"):
-            structured["sound"] = sound
-        if "example_word" not in structured or not structured.get("example_word"):
-            structured["example_word"] = example_word
-        log_vocab_attempt(f"Letter {letter}", attempt, {**structured, "level": "A"})
-    return render_template("letter.html", structured=structured, raw=raw, letter=letter, attempt=attempt)
+        log_vocab_attempt(f"Letter {letter}", attempt, {**structured, "level": "A", "lang": lang_code})
+
+    return render_template(
+        "letter.html",
+        structured=structured,
+        raw=raw,
+        letter=request.form.get("letter", initial_letter),
+        attempt=request.form.get("attempt", ""),
+        lang_config=lang_config,
+        lang_code=lang_code,
+        t=translations  # <-- THE FIX: Pass the translations dictionary to the template
+    )
+
+@bp.route("/letter_sound")
+def letter_sound():
+    """Provides the text-to-speech string for a given letter and language."""
+    lang_code = request.args.get('lang', 'en')
+    letter = request.args.get('letter', 'A')
+    
+    # This could be expanded with more detailed lookups later
+    speak_text = f"This is the letter {letter}."
+    if lang_code == 'ar':
+        speak_text = f"هذا حرف {letter}"
+    elif lang_code == 'prs': # Dari (Persian)
+        speak_text = f"این حرف {letter} است"
+
+    return jsonify({"speak_text": speak_text})

@@ -1,43 +1,232 @@
 <!doctype html>
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pocket Tutor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-      body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
-      ul { list-style: none; padding-left: 0; }
-      li { margin: 12px 0; }
-      a { font-size: 1.1em; text-decoration: none; color: #005a9c; }
-      a:hover { text-decoration: underline; }
-      .status { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.9em; margin-right: 8px; }
-      .ok { background: #d1ffe0; color: #006644; }
-      .warn { background: #fff7cc; color: #665500; }
-      .bad { background: #ffe0e0; color: #aa0000; }
-    </style>
-  </head>
-  <body>
-    <h1>Pocket Tutor (Literacy)</h1>
+        /* A little reset for consistency */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
 
-    <div>
-      <span class="status {% if ollama_up and gemma_ok %}ok{% elif ollama_up %}warn{% else %}bad{% endif %}">
-        {% if ollama_up %} Ollama: up {% else %} Ollama: down {% endif %}
-      </span>
-      <span class="status {% if gemma_ok %}ok{% else %}warn{% endif %}">
-        {% if gemma_ok %} Gemma 3n: responsive {% else %} Gemma 3n: warming / unavailable {% endif %}
-      </span>
+        body {
+            font-family: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f0f4f8; /* A soft, friendly blue background */
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 24px; /* More rounded corners */
+            padding: 24px 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* A soft shadow for depth */
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em; /* Bigger title */
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+        
+        /* Language Selector Styles */
+        .lang-selector {
+            margin-bottom: 24px;
+            border-top: 2px dashed #e0e0e0;
+            padding-top: 24px;
+        }
+        #lang-select {
+            padding: 10px 16px;
+            font-size: 1.1em;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            width: 100%;
+            background-color: #f8f9fa;
+        }
+        .lang-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #34495e;
+        }
+
+        h2 {
+            color: #34495e;
+            border-top: 2px dashed #e0e0e0;
+            padding-top: 24px;
+            margin-top: 0;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        li {
+            margin: 12px 0;
+        }
+
+        li a {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            font-size: 1.2em;
+            font-weight: 700;
+            text-decoration: none;
+            color: #34495e;
+            background-color: #ecf0f1;
+            border-radius: 12px;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        
+        /* RTL support for links */
+        [dir="rtl"] li a {
+            flex-direction: row-reverse;
+        }
+        [dir="rtl"] .icon {
+            margin-right: 0;
+            margin-left: 16px;
+        }
+
+
+        li a:hover {
+            background-color: #e0e8ea;
+            transform: scale(1.03); /* Fun little pop on hover */
+        }
+        
+        .icon {
+            font-size: 1.5em;
+            margin-right: 16px;
+        }
+
+        .footer-note {
+            margin-top: 32px;
+            color: #95a5a6;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 id="main-title">Pocket Tutor</h1>
+        <p class="subtitle" id="subtitle">Your Fun Learning Adventure!</p>
+
+        <!-- Language Selector -->
+        <div class="lang-selector">
+            <label for="lang-select" id="lang-label">Choose your language:</label>
+            <select id="lang-select" onchange="updatePageLanguage()">
+                <option value="en" selected>English</option>
+                <option value="ar" style="font-family: 'Noto Naskh Arabic', serif;">Arabic (العربية)</option>
+                <option value="prs" style="font-family: 'Noto Naskh Arabic', serif;">Dari (دری)</option>
+            </select>
+        </div>
+
+        <h2 id="activity-title">Choose an Activity</h2>
+        <ul id="learning-links">
+            <!-- Links are dynamically generated here -->
+        </ul>
+
+        <p class="footer-note">Offline-first & private, powered by Gemma 3n.</p>
     </div>
 
-    <h2 style="margin-top: 24px;">Learning Levels</h2>
-    <ul>
-      <li><a href="/letter">Letter Practice (Level A)</a></li>
-      <li><a href="/word_lesson">Word Lessons (Level B)</a></li>
-      <li><a href="/word_exercise">Word Exercises (Level C)</a></li>
-      <li><a href="/letter_drawing">Letter Drawing (Level D)</a></li>
-      <hr style="margin: 16px 0; border: 0; border-top: 1px solid #ccc;">
-      <li><a href="/vocab">Vocabulary &amp; Pronunciation</a></li>
-      <li><a href="/describe">Describe a Picture</a></li>
-      <li><a href="/math">Basic Math</a></li>
-    </ul>
+    <script>
+        const translations = {
+            en: {
+                title: "Pocket Tutor",
+                subtitle: "Your Fun Learning Adventure!",
+                lang_label: "Choose your language:",
+                activity_title: "Choose an Activity",
+                links: [
+                    { href: '/letter', text: 'Letter Practice', icon: '🔤' },
+                    { href: '/word_lesson', text: 'Word Lessons', icon: '📖' },
+                    { href: '/word_exercise', text: 'Word Exercises', icon: '✏️' },
+                    { href: '/letter_drawing', text: 'Letter Drawing', icon: '🎨' },
+                    { href: '/vocab', text: 'Vocabulary & Pronunciation', icon: '🗣️' },
+                    { href: '/describe', text: 'Describe a Picture', icon: '�️' },
+                    { href: '/math', text: 'Basic Math', icon: '➕' }
+                ]
+            },
+            ar: {
+                title: "المعلم الجيبي",
+                subtitle: "مغامرتك التعليمية الممتعة!",
+                lang_label: "اختر لغتك:",
+                activity_title: "اختر نشاطًا",
+                links: [
+                    { href: '/letter', text: 'تمرين الحروف', icon: '🔤' },
+                    { href: '/word_lesson', text: 'دروس الكلمات', icon: '📖' },
+                    { href: '/word_exercise', text: 'تمارين الكلمات', icon: '✏️' },
+                    { href: '/letter_drawing', text: 'رسم الحروف', icon: '🎨' }
+                ]
+            },
+            prs: {
+                title: "معلم جیبی",
+                subtitle: "ماجراجویی یادگیری سرگرم کننده شما!",
+                lang_label: "زبان خود را انتخاب کنید:",
+                activity_title: "یک فعالیت را انتخاب کنید",
+                links: [
+                    { href: '/letter', text: 'تمرین حروف', icon: '🔤' },
+                    { href: '/word_lesson', text: 'درس های کلمه', icon: '📖' },
+                    { href: '/word_exercise', text: 'تمرین های کلمه', icon: '✏️' },
+                    { href: '/letter_drawing', text: 'ترسیم حروف', icon: '🎨' }
+                ]
+            }
+        };
 
-    <p style="margin-top: 24px; color: #555;">Offline-first, private, powered by Gemma 3n running locally via Ollama.</p>
-  </body>
+        function updatePageLanguage() {
+            const lang = document.getElementById('lang-select').value;
+            const content = translations[lang];
+            
+            // Update text direction and font
+            if (lang === 'ar' || lang === 'prs') {
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.body.style.fontFamily = "'Noto Naskh Arabic', serif";
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+                document.body.style.fontFamily = "'Nunito', sans-serif";
+            }
+
+            // Update text content
+            document.getElementById('main-title').textContent = content.title;
+            document.getElementById('subtitle').textContent = content.subtitle;
+            document.getElementById('lang-label').textContent = content.lang_label;
+            document.getElementById('activity-title').textContent = content.activity_title;
+            
+            // Update links
+            const linksContainer = document.getElementById('learning-links');
+            let html = '';
+            content.links.forEach(link => {
+                const linkHref = `${link.href}?lang=${lang}`;
+                html += `<li><a href="${linkHref}"><span class="icon">${link.icon}</span> ${link.text}</a></li>`;
+            });
+            linksContainer.innerHTML = html;
+        }
+
+        // Initial call to populate the page when it loads
+        document.addEventListener('DOMContentLoaded', updatePageLanguage);
+    </script>
+</body>
 </html>
+�

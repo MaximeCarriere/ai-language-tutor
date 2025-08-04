@@ -1,150 +1,255 @@
 <!doctype html>
-<html>
-  <head>
-    <title>Letter Practice</title>
+<html lang="{{ lang_code }}" dir="{{ lang_config.direction }}">
+<head>
+    <title>{{ t.letter_practice }}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-      .alphabet {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 16px;
-      }
-      .letter-box {
-        width: 40px;
-        height: 40px;
-        border: 2px solid #333;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-weight: bold;
-        user-select: none;
-        transition: background .2s, border-color .2s;
-      }
-      .letter-box.selected {
-        background: #ddeeff;
-        border-color: #4477cc;
-      }
-      .lesson-link {
-        margin-top: 12px;
-        display: inline-block;
-        padding: 6px 12px;
-        background: #4477cc;
-        color: white;
-        border-radius: 4px;
-        text-decoration: none;
-        font-weight: bold;
-      }
-      .lesson-link:hover {
-        background: #335fa3;
-      }
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: {{ lang_config.font | safe }};
+            background-color: #f0f4f8;
+            color: #34495e;
+            margin: 0;
+            padding: 24px;
+        }
+
+        .main-container {
+            max-width: 600px;
+            margin: 0 auto;
+            display: grid;
+            gap: 24px;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 8px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .alphabet {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .letter-box {
+            width: 45px;
+            height: 45px;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3em;
+            font-weight: 700;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .letter-box:hover {
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        .letter-box.selected {
+            background: #3498db;
+            border-color: #3498db;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"] {
+            font-family: inherit;
+            font-size: 1.1em;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid #ccc;
+            width: 100%;
+        }
+
+        .button {
+            font-family: 'Nunito', sans-serif;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+            width: 100%;
+        }
+
+        .button-submit {
+            background-color: #2ecc71;
+            box-shadow: 0 4px 0 #27ae60;
+        }
+        .button-submit:hover {
+            background-color: #2abd69;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 0 #27ae60;
+        }
+        .button-submit:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 0 #27ae60;
+        }
+        
+        pre {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
     </style>
-  </head>
-  <body>
-    <h1>Letter Level (A)</h1>
-    <a href="/">← Home</a>
+</head>
+<body>
+    <div class="main-container">
 
-    <!-- Lesson launch -->
-    <div style="margin:12px 0;">
-      <a id="start-lesson" class="lesson-link" href="/letter_lesson?letter={{ letter }}">Start full lesson on "{{ letter }}"</a>
+        <div class="header">
+            <h1>{{ t.letter_practice }}</h1>
+            <a href="/?lang={{ lang_code }}" class="home-link">← {{ t.back_to_home }}</a>
+        </div>
+
+        <div class="card">
+            <h2>{{ t.letter_practice }}</h2>
+            <div class="alphabet" id="alphabet">
+                {% for ch in lang_config.alphabet %}
+                  <div class="letter-box" data-letter="{{ ch }}">{{ ch }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>{{ t.practice_typing }}</h2>
+            <form method="post" action="?lang={{ lang_code }}">
+                <div class="form-group">
+                    <label for="letter-input">{{ t.selected_letter }}</label>
+                    <input type="text" id="letter-input" name="letter" value="{{ letter }}" readonly style="background:#eee; text-align:center; font-weight:bold; font-size:1.5em;">
+                </div>
+                <div class="form-group">
+                    <label for="attempt-input">{{ t.your_attempt }}</label>
+                    <input type="text" id="attempt-input" name="attempt" placeholder="{{ t.type_letter_here }}" value="{{ attempt }}" autocomplete="off" autofocus>
+                </div>
+                <div>
+                    <button type="submit" class="button button-submit">{{ t.check_my_typing }}</button>
+                </div>
+            </form>
+        </div>
+
+        {% if structured or raw %}
+        <div class="card">
+            <h2>{{ t.teachers_feedback }}</h2>
+            {% if structured %}
+                <pre>{{ structured | tojson(indent=2) }}</pre>
+            {% else %}
+                <pre>{{ raw }}</pre>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
-
-    <!-- Alphabet panel -->
-    <div>
-      <h2>Alphabet</h2>
-      <div class="alphabet" id="alphabet">
-        {% for ch in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
-          <div class="letter-box" data-letter="{{ ch }}">{{ ch }}</div>
-        {% endfor %}
-      </div>
-      <p>Click a letter to hear its sound (via Gemma + TTS) and select it for practice or lesson.</p>
-    </div>
-
-    <!-- Practice form -->
-    <form method="post">
-      <div>
-        <label>Letter:</label>
-        <input id="letter-input" name="letter" value="{{ letter }}" maxlength="1" size="2">
-      </div>
-      <div>
-        <label>Your attempt (type letter or sound):</label><br>
-        <input name="attempt" value="{{ attempt }}">
-      </div>
-      <div style="margin-top:8px;">
-        <button type="submit">Practice</button>
-      </div>
-    </form>
-
-    {% if structured %}
-      <h2>Feedback</h2>
-      <pre>{{ structured | tojson(indent=2) }}</pre>
-    {% elif raw %}
-      <h2>Raw Output</h2>
-      <pre>{{ raw }}</pre>
-    {% endif %}
 
     <script>
-      const alphabetDiv = document.getElementById("alphabet");
-      const letterInput = document.getElementById("letter-input");
-      const startLessonLink = document.getElementById("start-lesson");
+        const langCode = "{{ lang_code }}";
+        const langConfig = {{ lang_config | tojson }};
+        const t = {{ t | tojson }};
 
-      function updateLessonLink(letter) {
-        startLessonLink.href = `/letter_lesson?letter=${encodeURIComponent(letter)}`;
-        startLessonLink.textContent = `Start full lesson on "${letter}"`;
-      }
+        const alphabetDiv = document.getElementById("alphabet");
+        const letterInput = document.getElementById("letter-input");
+        const attemptInput = document.getElementById("attempt-input");
 
-      async function fetchPronunciation(letter) {
-        try {
-          const resp = await fetch(`/letter_sound?letter=${letter}`);
-          const data = await resp.json();
-          return data.speak_text;
-        } catch (e) {
-          console.warn("Failed to fetch pronunciation:", e);
-          return `The letter ${letter}.`;
+        async function fetchPronunciation(letter) {
+            try {
+                const resp = await fetch(`/letter_sound?letter=${encodeURIComponent(letter)}&lang=${langCode}`);
+                const data = await resp.json();
+                return data.speak_text;
+            } catch (e) {
+                console.warn("Failed to fetch pronunciation:", e);
+                return `The letter ${letter}.`;
+            }
         }
-      }
+        
+        function selectLetter(letter) {
+             // Visual selection
+            document.querySelectorAll(".letter-box").forEach(b => b.classList.remove("selected"));
+            const targetBox = document.querySelector(`.letter-box[data-letter="${letter}"]`);
+            if(targetBox) {
+                targetBox.classList.add("selected");
+            }
+            
+            // Update input
+            if (letterInput) letterInput.value = letter;
+            
+            // Focus on the typing area
+            if(attemptInput) attemptInput.focus();
+        }
 
-      alphabetDiv.querySelectorAll(".letter-box").forEach(box => {
-        const letter = box.dataset.letter;
-        box.addEventListener("click", async () => {
-          // Visual selection
-          document.querySelectorAll(".letter-box").forEach(b => b.classList.remove("selected"));
-          box.classList.add("selected");
-          // Update input & lesson link
-          if (letterInput) letterInput.value = letter;
-          updateLessonLink(letter);
+        alphabetDiv.querySelectorAll(".letter-box").forEach(box => {
+            const letter = box.dataset.letter;
+            box.addEventListener("click", async () => {
+                selectLetter(letter);
 
-          // Fetch and speak via TTS
-          const speakText = await fetchPronunciation(letter);
-          if ('speechSynthesis' in window) {
-            const utter = new SpeechSynthesisUtterance(speakText);
-            utter.lang = 'en-US';
-            window.speechSynthesis.speak(utter);
-          } else {
-            console.log("Gemma says:", speakText);
-          }
+                // Fetch and speak via TTS
+                const speakText = await fetchPronunciation(letter);
+                if ('speechSynthesis' in window) {
+                    const utter = new SpeechSynthesisUtterance(speakText);
+                    utter.lang = langConfig.code;
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(utter);
+                }
+            });
         });
-      });
 
-      // If letter input changes manually, sync the lesson link
-      letterInput?.addEventListener("input", () => {
-        const val = letterInput.value.trim().toUpperCase().slice(0,1) || "A";
-        updateLessonLink(val);
-        // Highlight corresponding letter box
-        document.querySelectorAll(".letter-box").forEach(b => {
-          b.classList.toggle("selected", b.dataset.letter === val);
-        });
-      });
-
-      // Initialize selection on load
-      (() => {
-        const initial = "{{ letter | default('A') }}".toUpperCase();
-        updateLessonLink(initial);
-        document.querySelectorAll(".letter-box").forEach(b => {
-          if (b.dataset.letter === initial) b.classList.add("selected");
-        });
-      })();
+        // Initialize selection on load
+        (() => {
+            const initial = "{{ letter }}";
+            selectLetter(initial);
+        })();
     </script>
-  </body>
+</body>
 </html>

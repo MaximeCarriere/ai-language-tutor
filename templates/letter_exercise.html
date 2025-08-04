@@ -1,74 +1,221 @@
 <!doctype html>
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exercises for Letter {{ letter }}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-      body { font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
-      .section { border:1px solid #ccc; padding:16px; margin-bottom:24px; border-radius:8px; }
-      .grid { display:flex; gap:12px; flex-wrap:wrap; }
-      .box { border:1px solid #888; padding:12px; border-radius:6px; flex:1; min-width:180px; position:relative; }
-      .correct { background:#d4f8d4; }
-      .wrong { background:#f8d4d4; }
-      .btn { padding:6px 10px; cursor:pointer; border-radius:4px; border:1px solid #444; background:#eef; }
-      .feedback { margin-top:8px; font-weight:600; }
+        /* --- General Layout --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+            background-color: #f0f4f8; /* Soft, friendly blue background */
+            color: #333;
+            margin: 0;
+            padding: 24px;
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: block;
+            width: fit-content;
+            margin: 0 auto 32px auto;
+            padding: 8px 16px;
+            background-color: #fff;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+        }
+
+        /* --- Exercise Section Cards --- */
+        .section {
+            background: #ffffff;
+            border: none;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .section h2 {
+            color: #34495e;
+            margin-top: 0;
+            border-bottom: 2px dashed #e0e0e0;
+            padding-bottom: 12px;
+        }
+
+        .section p {
+            color: #555;
+            font-size: 1.1em;
+        }
+        
+        .exercise-box {
+            background: #f9f9f9;
+            border: 2px solid #eee;
+            padding: 16px;
+            border-radius: 16px;
+            margin-top: 16px;
+        }
+        
+        .choices-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* --- Interactive Elements --- */
+        .choice {
+            padding: 12px 18px;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.5em; /* Bigger text for easy clicking */
+            font-weight: 700;
+            color: #2c3e50;
+            background-color: #fff;
+            transition: all 0.2s ease;
+            user-select: none; /* Prevents text selection on click */
+        }
+        
+        .word.choice {
+            font-size: 1.1em; /* Words can be a bit smaller */
+        }
+        
+        .choice:hover {
+            transform: scale(1.05);
+            border-color: #3498db;
+        }
+
+        /* --- Feedback Styles --- */
+        .feedback {
+            margin-top: 16px;
+            font-weight: 700;
+            font-size: 1.1em;
+            text-align: center;
+            min-height: 1.5em; /* Prevents layout jump when text appears */
+        }
+
+        .correct {
+            background: #e0f8e9;
+            color: #2ecc71;
+            border-color: #2ecc71;
+            transform: scale(1.05);
+        }
+
+        .wrong {
+            background: #fdeded;
+            color: #e74c3c;
+            border-color: #e74c3c;
+            animation: shake 0.5s; /* Fun shake animation for wrong answers */
+        }
+        
+        .feedback.correct-text { color: #2ecc71; }
+        .feedback.wrong-text { color: #e74c3c; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
     </style>
-  </head>
-  <body>
-    <h1>Exercises for Letter {{ letter }}</h1>
-    <a href="/letter_lesson?letter={{ letter }}">← Back to Lesson</a>
+</head>
+<body>
+<div class="main-container">
+    <h1>Let's Practice '{{ letter }}'</h1>
+    <a href="/letter" class="back-link">← Back to All Activities</a>
 
     <div class="section">
-      <h2>1. Recognize the Letter "{{ letter }}"</h2>
-      <p>Click the correct letter in each row:</p>
-      {% for row in letter_recognition %}
-        <div class="box" data-correct="{{ row.correct_index }}">
-          <div style="display:flex; gap:8px;">
-            {% for ch in row.choices %}
-              <div class="choice" style="flex:1; text-align:center; font-size:24px; padding:8px; border:1px solid #aaa; border-radius:4px; cursor:pointer;">
-                {{ ch }}
-              </div>
-            {% endfor %}
-          </div>
-          <div class="feedback" aria-live="polite"></div>
+        <h2>1. Find the Letter "{{ letter }}"</h2>
+        <p>Click on the correct letter in each group.</p>
+        {% for row in letter_recognition %}
+        <div class="exercise-box" data-correct-index="{{ row.correct_index }}">
+            <div class="choices-grid">
+                {% for ch in row.choices %}
+                <div class="choice">{{ ch }}</div>
+                {% endfor %}
+            </div>
+            <div class="feedback" aria-live="polite"></div>
         </div>
-      {% endfor %}
+        {% endfor %}
     </div>
 
     <div class="section">
-      <h2>2. Find a Word Containing "{{ letter }}"</h2>
-      <p>Select the word that has the letter "{{ letter }}" in it:</p>
-      {% for series in word_finder %}
-        <div class="box" data-correct="{{ series.correct_index }}">
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            {% for w in series.choices %}
-              <div class="choice" style="padding:8px 12px; border:1px solid #aaa; border-radius:4px; cursor:pointer; margin:4px;">
-                {{ w }}
-              </div>
-            {% endfor %}
-          </div>
-          <div class="feedback" aria-live="polite"></div>
+        <h2>2. Find the Word</h2>
+        <p>Click the word that has the letter "{{ letter }}" in it.</p>
+        {% for series in word_finder %}
+        <div class="exercise-box" data-correct-index="{{ series.correct_index }}">
+            <div class="choices-grid">
+                {% for w in series.choices %}
+                <div class="choice word">{{ w }}</div>
+                {% endfor %}
+            </div>
+            <div class="feedback" aria-live="polite"></div>
         </div>
-      {% endfor %}
+        {% endfor %}
     </div>
+</div>
 
-    <script>
-      // Letter recognition
-      document.querySelectorAll('[data-correct]').forEach(box => {
-        const correctIndex = parseInt(box.dataset.correct, 10);
+<script>
+    document.querySelectorAll('.exercise-box').forEach(box => {
+        const correctIndex = parseInt(box.dataset.correctIndex, 10);
         const choices = Array.from(box.querySelectorAll('.choice'));
-        choices.forEach((el, idx) => {
-          el.addEventListener('click', () => {
-            const fb = box.querySelector('.feedback');
-            if (idx === correctIndex) {
-              el.classList.add('correct');
-              fb.textContent = '✅ Correct!';
-            } else {
-              el.classList.add('wrong');
-              fb.textContent = `❌ Nope, that was "${el.textContent}". Try again.`;
-            }
-          });
+        const feedbackEl = box.querySelector('.feedback');
+        
+        // This flag prevents interaction after the correct answer is found
+        let isCompleted = false;
+
+        choices.forEach((choiceEl, index) => {
+            choiceEl.addEventListener('click', () => {
+                // Don't do anything if this box is already answered correctly
+                if (isCompleted) {
+                    return;
+                }
+
+                // Clear previous "wrong" styles from siblings
+                choices.forEach(c => c.classList.remove('wrong'));
+                
+                if (index === correctIndex) {
+                    isCompleted = true; // Mark as completed
+                    choiceEl.classList.add('correct');
+                    feedbackEl.textContent = 'Awesome! 🎉 You got it!';
+                    feedbackEl.className = 'feedback correct-text';
+                } else {
+                    choiceEl.classList.add('wrong');
+                    feedbackEl.textContent = 'Not quite! Give it another try. 👍';
+                    feedbackEl.className = 'feedback wrong-text';
+                }
+            });
         });
-      });
-    </script>
-  </body>
+    });
+</script>
+
+</body>
 </html>

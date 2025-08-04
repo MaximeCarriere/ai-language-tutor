@@ -1,55 +1,166 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Letter Drawing Practice</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
-        .container { text-align: center; }
-        #drawing-canvas { border: 2px solid #333; cursor: crosshair; touch-action: none; border-radius: 8px; }
-        .controls { margin: 16px 0; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; align-items: center; }
-        .btn { padding: 10px 18px; font-size: 1em; cursor: pointer; border-radius: 6px; border: 1px solid #444; }
-        .btn-primary { background: #007bff; color: white; border-color: #007bff; }
-        .btn-secondary { background: #6c757d; color: white; border-color: #6c757d; }
-        #feedback-box { margin-top: 20px; padding: 16px; background: #f0f5ff; border: 1px solid #cce; border-radius: 8px; min-height: 50px; text-align: left; }
-        #letter-selector, #voice-selector { padding: 8px; font-size: 1.1em; border-radius: 6px; }
+        /* --- General Layout & Typography --- */
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+            background-color: #f0f4f8;
+            color: #34495e;
+            margin: 0;
+            padding: 24px;
+        }
+
+        .main-container {
+            max-width: 500px; /* Optimal for a single canvas */
+            margin: 0 auto;
+            display: grid;
+            gap: 24px;
+            text-align: center;
+        }
+
+        h1 { color: #2c3e50; font-size: 2.5em; margin: 0; }
+        .home-link { display: block; margin-top: 8px; color: #3498db; text-decoration: none; font-weight: 700; }
+
+        /* --- UI Cards --- */
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        /* --- Controls & Forms --- */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-group label {
+            font-weight: 700;
+            font-size: 1.1em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        select {
+            font-family: 'Nunito', sans-serif;
+            padding: 12px 16px;
+            font-size: 1.1em;
+            border-radius: 12px;
+            border: 2px solid #ccc;
+            background-color: #fff;
+        }
+        
+        /* --- Buttons --- */
+        .button {
+            font-family: 'Nunito', sans-serif;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+        }
+        
+        .button-submit {
+            background-color: #2ecc71;
+            box-shadow: 0 4px 0 #27ae60;
+        }
+        .button-submit:hover { background-color: #2abd69; transform: translateY(-1px); box-shadow: 0 5px 0 #27ae60; }
+        .button-submit:active { transform: translateY(1px); box-shadow: 0 3px 0 #27ae60; }
+        
+        .button-clear {
+            background-color: #e74c3c;
+            box-shadow: 0 4px 0 #c0392b;
+        }
+        .button-clear:hover { background-color: #d64535; transform: translateY(-1px); box-shadow: 0 5px 0 #c0392b; }
+        .button-clear:active { transform: translateY(1px); box-shadow: 0 3px 0 #c0392b; }
+
+        /* --- Drawing Canvas --- */
+        #drawing-canvas {
+            border: 4px dashed #3498db;
+            cursor: crosshair;
+            touch-action: none;
+            border-radius: 20px;
+            background-color: #fdfdfd;
+        }
+
+        /* --- Feedback Area --- */
+        #feedback-box {
+            background: #ecf0f1;
+            border-radius: 16px;
+            padding: 20px;
+            min-height: 100px;
+            text-align: left;
+            line-height: 1.6;
+        }
+        #feedback-box p { margin: 0; }
+        #feedback-box h3 { text-align: left; margin-top: 0; margin-bottom: 8px; color: #2c3e50; }
+        .play-feedback-btn {
+            font-family: 'Nunito', sans-serif;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            font-weight: 700;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Letter Drawing Practice</h1>
-        <a href="/">← Home</a>
+    <div class="main-container">
+        <div>
+            <h1>Letter Drawing</h1>
+            <a href="/" class="home-link">← Back to Home</a>
+        </div>
 
-        <div class="controls">
-            <div>
-                <label for="letter-selector" style="font-weight: bold;">Letter to practice: </label>
-                <select id="letter-selector">
-                    <script>
-                        for (let i = 65; i <= 90; i++) {
-                            const letter = String.fromCharCode(i);
-                            document.write(`<option value="${letter}">${letter}</option>`);
-                        }
-                    </script>
-                </select>
-            </div>
-            <div>
-                <label for="voice-selector" style="font-weight: bold;">Voice: </label>
-                <select id="voice-selector"><option>Loading voices...</option></select>
+        <div class="card">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="letter-selector">Letter to Practice</label>
+                    <select id="letter-selector"></select>
+                </div>
+                <div class="control-group">
+                    <label for="voice-selector">Tutor's Voice</label>
+                    <select id="voice-selector"><option>Loading...</option></select>
+                </div>
             </div>
         </div>
 
         <canvas id="drawing-canvas" width="400" height="400"></canvas>
 
         <div class="controls">
-            <button id="clear-btn" class="btn btn-secondary">Clear</button>
-            <button id="submit-btn" class="btn btn-primary">Get Feedback</button>
+            <button id="clear-btn" class="button button-clear">Clear Drawing</button>
+            <button id="submit-btn" class="button button-submit">Get Feedback!</button>
         </div>
 
-        <div id="feedback-box">
-            <p>Draw the selected letter in the box and click "Get Feedback".</p>
+        <div id="feedback-box" class="card">
+            <p>Let's draw! Pick a letter from the dropdown, draw it in the box, and click "Get Feedback!" to see how you did.</p>
         </div>
     </div>
 
     <script>
+        // --- Element References ---
         const canvas = document.getElementById('drawing-canvas');
         const ctx = canvas.getContext('2d');
         const clearBtn = document.getElementById('clear-btn');
@@ -61,110 +172,152 @@
         let isDrawing = false;
         let voices = [];
 
-        // --- UPDATED JAVASCRIPT ---
-
+        // --- Voice Synthesis with Improvements ---
         function populateVoiceList() {
             voices = speechSynthesis.getVoices();
             voiceSelector.innerHTML = '';
-            if (voices.length === 0) {
+            const englishVoices = voices.filter(voice => voice.lang.startsWith('en'));
+            if (englishVoices.length === 0) {
                 voiceSelector.innerHTML = '<option>No voices available</option>';
                 return;
             }
-            voices.forEach((voice, i) => {
-                if (voice.lang.startsWith('en')) { // Only show English voices
-                    const option = document.createElement('option');
-                    option.textContent = `${voice.name} (${voice.lang})`;
-                    option.setAttribute('data-name', voice.name);
-                    voiceSelector.appendChild(option);
-                }
+            englishVoices.forEach(voice => {
+                const option = document.createElement('option');
+                option.textContent = `${voice.name.split('(')[0]} (${voice.lang})`;
+                option.setAttribute('data-name', voice.name);
+                voiceSelector.appendChild(option);
             });
-        }
-        
-        // Populate voices when they are loaded
-        populateVoiceList();
-        if (speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = populateVoiceList;
+            // Try to set a high-quality default
+            const googleVoice = englishVoices.find(v => v.name.includes('Google'));
+            if (googleVoice) {
+                voiceSelector.value = `${googleVoice.name.split('(')[0]} (${googleVoice.lang})`;
+            }
         }
 
-        function speakText(text) {
+        function speak(text) {
             if (!text || !('speechSynthesis' in window)) return;
-            
-            // Trick to make it say "A" instead of "capital A"
-            const textToSpeak = text.length === 1 ? `${text}.` : text;
-
-            const utter = new SpeechSynthesisUtterance(textToSpeak);
-            const selectedVoiceName = voiceSelector.selectedOptions[0].getAttribute('data-name');
+            const utter = new SpeechSynthesisUtterance(text);
+            const selectedVoiceName = voiceSelector.selectedOptions[0]?.getAttribute('data-name');
             const selectedVoice = voices.find(voice => voice.name === selectedVoiceName);
             
-            if (selectedVoice) {
-                utter.voice = selectedVoice;
-            }
-            
+            utter.voice = selectedVoice || voices.find(v => v.lang.startsWith('en'));
+            utter.pitch = 1.2;
+            utter.rate = 0.9;
             window.speechSynthesis.cancel();
             window.speechSynthesis.speak(utter);
         }
 
-        // --- The rest of the drawing logic remains the same ---
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 12;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
+        // --- Canvas Drawing Logic ---
+        function initializeCanvas() {
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 15;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
 
         function getEventPosition(event) {
             const rect = canvas.getBoundingClientRect();
-            if (event.touches && event.touches.length > 0) {
-                return { x: event.touches[0].clientX - rect.left, y: event.touches[0].clientY - rect.top };
-            }
-            return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+            const touch = event.touches ? event.touches[0] : null;
+            return {
+                x: (touch ? touch.clientX : event.clientX) - rect.left,
+                y: (touch ? touch.clientY : event.clientY) - rect.top
+            };
         }
         
         function startDrawing(e) { e.preventDefault(); isDrawing = true; const pos = getEventPosition(e); [lastX, lastY] = [pos.x, pos.y]; }
         function draw(e) { if (!isDrawing) return; e.preventDefault(); const pos = getEventPosition(e); ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(pos.x, pos.y); ctx.stroke(); [lastX, lastY] = [pos.x, pos.y]; }
         function stopDrawing() { isDrawing = false; }
-        function clearCanvas() { ctx.fillStyle = "white"; ctx.fillRect(0, 0, canvas.width, canvas.height); feedbackBox.innerHTML = '<p>Canvas cleared. Try again!</p>'; }
+        function clearCanvas() { initializeCanvas(); feedbackBox.innerHTML = '<p>Canvas cleared. Ready for a new masterpiece!</p>'; }
 
+        // --- Feedback Logic ---
         async function submitDrawing() {
-            const imageDataUrl = canvas.toDataURL('image/png');
-            const letter = letterSelector.value;
-            feedbackBox.innerHTML = '<p>Getting feedback from the AI tutor...</p>';
+            feedbackBox.innerHTML = '<p>Let me see... Analyzing your drawing... 🤔</p>';
             submitBtn.disabled = true;
+            clearBtn.disabled = true;
+
             try {
                 const response = await fetch('/letter_drawing', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image_data: imageDataUrl, letter: letter })
+                    body: JSON.stringify({
+                        image_data: canvas.toDataURL('image/png'),
+                        letter: letterSelector.value
+                    })
                 });
                 if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
                 const result = await response.json();
-                let feedbackHTML = `<h3>Feedback for "${letter}"</h3>`;
-                const recognized = result.recognized_letter || 'Not sure';
-                feedbackHTML += `<p><strong>AI says it looks like:</strong> ${recognized} <button onclick="speakText('${recognized}')" style="margin-left:8px;">Hear</button></p>`;
-                feedbackHTML += `<p style="margin-top: 16px;"><strong>Feedback:</strong> ${result.feedback || 'Could not get feedback.'}</p>`;
-                if (result.is_correct) {
-                     feedbackHTML += `<p style="color: green; font-weight: bold;">Great job, that's a good "${letter}"!</p>`;
-                } else {
-                     feedbackHTML += `<p style="color: red; font-weight: bold;">That's a good try! Let's work on it.</p>`;
-                }
-                feedbackBox.innerHTML = feedbackHTML;
+                displayFriendlyFeedback(result);
             } catch (error) {
                 console.error('Error:', error);
-                feedbackBox.innerHTML = '<p>Sorry, something went wrong. Please try again.</p>';
+                feedbackBox.innerHTML = '<p>Oh no! My brain is a little fuzzy. Could you try that again?</p>';
             } finally {
                 submitBtn.disabled = false;
+                clearBtn.disabled = false;
             }
         }
+        
+        function displayFriendlyFeedback(result) {
+            feedbackBox.innerHTML = ''; // Clear previous feedback
+            
+            const letter = result.target_letter || letterSelector.value;
+            const heading = document.createElement('h3');
+            heading.textContent = `Feedback for your letter '${letter}'`;
 
+            const feedbackP = document.createElement('p');
+            feedbackP.textContent = result.feedback || "Let's see how you did!";
+
+            const resultP = document.createElement('p');
+            let friendlyResult, voiceText;
+
+            if (result.is_correct) {
+                friendlyResult = `Wow, that looks just like an '${letter}'! Great job! 🎉`;
+                voiceText = `Wow, that looks just like an ${letter}! Great job!`;
+            } else {
+                friendlyResult = `That's a super start! Let's clear the canvas and try drawing it one more time. You can do it! 👍`;
+                voiceText = `That's a super start! Let's clear the canvas and try drawing it one more time. You can do it!`;
+            }
+            resultP.innerHTML = `<strong>Tutor says:</strong> ${friendlyResult}`;
+
+            feedbackBox.appendChild(heading);
+            feedbackBox.appendChild(feedbackP);
+            feedbackBox.appendChild(resultP);
+            speak(voiceText); // Speak the main feedback
+        }
+
+        // --- Page Initialization ---
+        function initializePage() {
+            // Populate letter selector cleanly
+            for (let i = 65; i <= 90; i++) {
+                const letter = String.fromCharCode(i);
+                const option = document.createElement('option');
+                option.value = letter;
+                option.textContent = letter;
+                letterSelector.appendChild(option);
+            }
+            // Populate voices
+            populateVoiceList();
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = populateVoiceList;
+            }
+            // Prepare canvas
+            initializeCanvas();
+        }
+
+        // --- Event Listeners ---
         canvas.addEventListener('mousedown', startDrawing);
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', stopDrawing);
         canvas.addEventListener('mouseout', stopDrawing);
-        canvas.addEventListener('touchstart', startDrawing);
-        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
         canvas.addEventListener('touchend', stopDrawing);
         clearBtn.addEventListener('click', clearCanvas);
         submitBtn.addEventListener('click', submitDrawing);
+
+        // --- Run Everything ---
+        initializePage();
     </script>
 </body>
 </html>

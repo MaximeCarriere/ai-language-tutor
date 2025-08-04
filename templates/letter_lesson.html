@@ -1,209 +1,332 @@
 <!doctype html>
-<html>
-  <head>
-    <title>Letter Lesson</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Lesson: {{ letter }}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+
     <style>
-      body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 16px;
-      }
-      .font-sample { font-size: 64px; margin: 8px 0; }
-      .section { border: 1px solid #ccc; padding: 16px; margin-bottom: 24px; border-radius: 8px; }
-      .phoneme-box, .word-box { margin-top: 16px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; }
-      .result { background: #f5f5f5; padding: 8px; border-radius: 4px; margin-top: 8px; }
-      .small-btn { font-size: 0.85em; padding: 6px 10px; margin-right: 6px; cursor: pointer; }
-      pre { overflow: auto; }
-      .highlight-letter { color: red; }
-      .feedback-text { white-space: pre-wrap; }
-      .exercise-box { border: 1px dashed #888; padding: 12px; margin-bottom: 16px; border-radius: 6px; }
-      .choices { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-      .choice-btn { padding: 8px 14px; border: 1px solid #444; border-radius: 4px; background: #f0f0f0; cursor: pointer; }
-      .choice-btn.correct { background: #c8f7c5; border-color: #2e7d32; }
-      .choice-btn.wrong { background: #f7c5c5; border-color: #c62828; }
-      .hidden { display: none; }
-    </style>
-  </head>
-  <body>
-    <h1>Letter Lesson: {{ letter }}</h1>
-    <a href="/">← Home</a>
+        /* --- General Layout & Typography --- */
+        *, *::before, *::after { box-sizing: border-box; }
 
-    <!-- New button to jump to exercises for this letter -->
-    <div style="margin:12px 0;">
-        <a href="/letter_exercise/?letter={{ letter }}">
-          <button class="small-btn">Start Exercises for "{{ letter }}"</button>
-        </a>
-    </div>
-
-    {% if message %}
-      <div style="background:#fff4e5; padding:10px; border:1px solid #f1c27d; border-radius:5px; margin:12px 0;">
-        <strong>Note:</strong> {{ message }}
-      </div>
-    {% endif %}
-
-    <!-- Intro -->
-    <div class="section">
-      <h2>Introduction</h2>
-      <p id="intro-text">{{ intro }}</p>
-      <button id="play-intro" class="small-btn">Play Intro</button>
-    </div>
-
-    <!-- Visual recognition -->
-    <div class="section">
-      <h2>See the Letter</h2>
-      <p>Uppercase / lowercase in different fonts (target letter in red):</p>
-      {% for f in fonts %}
-        <div class="font-sample" style="font-family: {{ f }};">
-          <span class="highlight-letter">{{ letter }}</span>
-          <span class="highlight-letter">{{ letter | lower }}</span>
-        </div>
-      {% endfor %}
-    </div>
-
-    <!-- All phoneme reference -->
-    <div class="section">
-      <h2>All Sounds of "{{ letter }}"</h2>
-      <p>This letter can make multiple sounds. Here are common pronunciations with example words:</p>
-      <ul>
-        {% for p in lesson.all_phonemes %}
-          <li>
-            <strong>{{ p.symbol }}</strong> — as in "{{ p.example }}"
-            <button type="button" class="small-btn" onclick="speakText('The sound {{ p.symbol }}, as in {{ p.example }}.')">
-              Play Example
-            </button>
-          </li>
-        {% endfor %}
-        {% if not lesson.all_phonemes %}
-          <li>No expanded phoneme list available for this letter.</li>
-        {% endif %}
-      </ul>
-    </div>
-
-    <!-- Phoneme drills -->
-    <div class="section">
-      <h2>Phoneme Practice</h2>
-      {% for p in phonemes %}
-        <div class="phoneme-box">
-          <h3>Sound: {{ p.symbol }} (as in "{{ p.example }}")</h3>
-
-          <button type="button" class="small-btn" onclick="speakText('Focus on the sound {{ p.symbol }} as in {{ p.example }}.')">
-            Play Instruction
-          </button>
-
-          <form method="post" enctype="multipart/form-data" style="margin-top:8px;">
-            <input type="hidden" name="sub" value="phoneme">
-            <input type="hidden" name="symbol" value="{{ p.symbol }}">
-            <div style="display:flex; gap:12px; flex-wrap:wrap;">
-              <div>
-                <label>Your attempt (text):</label><br>
-                <input name="phoneme_attempt" value="">
-              </div>
-              <div>
-                <label>Or upload audio:</label><br>
-                <input type="file" name="phoneme_audio" accept="audio/*">
-              </div>
-              <div style="align-self:flex-end;">
-                <button type="submit">Submit Phoneme</button>
-              </div>
-            </div>
-          </form>
-
-          {% if phoneme_result and phoneme_result.target_phoneme == p.symbol %}
-            <div class="result">
-              {% set combined = phoneme_result.feedback %}
-              <div class="feedback-text">
-                <strong>Feedback:</strong> {{ combined }}
-              </div>
-              <div style="margin-top:6px;">
-                <button type="button" class="small-btn"
-                  data-text="{{ combined | e }}"
-                  onclick="speakText(this.dataset.text)">
-                  Play Combined Feedback
-                </button>
-              </div>
-              <pre>{{ phoneme_result | tojson(indent=2) }}</pre>
-            </div>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-
-    <!-- Word drills -->
-    <div class="section">
-      <h2>Word Practice</h2>
-      {% for w in words %}
-        <div class="word-box">
-          <h3>Word: {{ w.word }}</h3>
-          <p><em>Example sentence:</em> {{ w.example_sentence }}</p>
-
-          <button type="button" class="small-btn" onclick="speakText('Practice saying the word {{ w.word }}. {{ w.example_sentence }}')">
-            Play Instruction
-          </button>
-
-          <form method="post" enctype="multipart/form-data" style="margin-top:8px;">
-            <input type="hidden" name="sub" value="word">
-            <input type="hidden" name="word" value="{{ w.word }}">
-            <div style="display:flex; gap:12px; flex-wrap:wrap;">
-              <div>
-                <label>Your attempt (text):</label><br>
-                <input name="word_attempt" value="">
-              </div>
-              <div>
-                <label>Or upload audio:</label><br>
-                <input type="file" name="word_audio" accept="audio/*">
-              </div>
-              <div style="align-self:flex-end;">
-                <button type="submit">Submit Word</button>
-              </div>
-            </div>
-          </form>
-
-          {% if word_result and word_result.word == w.word %}
-            <div class="result">
-              <pre>{{ word_result | tojson(indent=2) }}</pre>
-              {% if word_result.pronunciation_feedback %}
-                <button type="button" class="small-btn"
-                  data-feedback="{{ word_result.pronunciation_feedback | replace('"','&quot;') | replace("'", '&#39;') }}"
-                  onclick="speakText(this.dataset.feedback)">
-                  Play Feedback
-                </button>
-              {% endif %}
-              {% if word_result.next_prompt %}
-                <button type="button" class="small-btn"
-                  data-next="{{ word_result.next_prompt | replace('"','&quot;') | replace("'", '&#39;') }}"
-                  onclick="speakText(this.dataset.next)">
-                  Play Next Prompt
-                </button>
-              {% endif %}
-            </div>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-
-    <script>
-      function speakText(text) {
-        if (!text) return;
-        // sanitize stray JSON escapes visually
-        try {
-          text = text.replace(/\\u2018/g, "‘").replace(/\\u2019/g, "’").replace(/\\u00e6/g, "æ");
-        } catch (e) {}
-        console.log("TTS speaking:", text);
-        if ('speechSynthesis' in window) {
-          const utter = new SpeechSynthesisUtterance(text);
-          utter.lang = 'en-US';
-          window.speechSynthesis.cancel();
-          window.speechSynthesis.speak(utter);
-        } else {
-          alert(text);
+        body {
+            font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+            background-color: #f0f4f8;
+            color: #34495e;
+            margin: 0;
+            padding: 24px;
         }
-      }
 
-      document.getElementById("play-intro")?.addEventListener("click", () => {
-        const text = document.getElementById("intro-text")?.textContent || "";
-        speakText(text);
-      });
-    </script>
-  </body>
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            gap: 32px;
+        }
+
+        h1, h2, h3 { color: #2c3e50; text-align: center; }
+        h1 { font-size: 2.8em; margin: 0; }
+        h2 { font-size: 1.8em; margin-top: 0; border-bottom: 2px dashed #e0e0e0; padding-bottom: 12px; }
+        h3 { font-size: 1.4em; text-align: left; }
+        p { line-height: 1.6; font-size: 1.1em; }
+
+        /* --- UI Cards & Notices --- */
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .info-notice {
+            display: {% if message %}block{% else %}none{% endif %};
+            background: #fef5e7;
+            border: 2px solid #f39c12;
+            color: #c0392b;
+            padding: 16px;
+            border-radius: 16px;
+        }
+
+        /* --- Buttons & Links --- */
+        .home-link { display: block; width: fit-content; margin: 8px auto 0 auto; color: #3498db; text-decoration: none; font-weight: 700; }
+        
+        .cta-button {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.3em;
+            text-align: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 0 #27ae60;
+        }
+        .cta-button:hover { background-color: #2abd69; transform: translateY(-2px); box-shadow: 0 7px 0 #27ae60; }
+        .cta-button:active { transform: translateY(2px); box-shadow: 0 3px 0 #27ae60; }
+
+        .play-button {
+            font-family: 'Nunito', sans-serif;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .play-button:hover { background-color: #2980b9; transform: scale(1.05); }
+
+        /* --- Content Specific Styles --- */
+        .font-samples { text-align: center; }
+        .font-sample { font-size: 80px; margin: 16px 0; display: block; }
+        .highlight-letter { color: #e74c3c; font-weight: 800; }
+        
+        .phoneme-list { list-style: none; padding-left: 0; }
+        .phoneme-list li { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; font-size: 1.1em; }
+        
+        .practice-box { margin-top: 16px; padding: 16px; border: 2px dashed #ddd; border-radius: 16px; }
+        
+        /* --- Forms --- */
+        .practice-form { display: grid; gap: 16px; margin-top: 16px; }
+        .practice-form label { font-weight: 700; font-size: 1.1em; display: block; margin-bottom: 4px; }
+        .practice-form input[type="text"], .practice-form input[type="file"] {
+            font-family: 'Nunito', sans-serif;
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            font-size: 1.1em;
+        }
+        .practice-form button {
+            justify-self: start;
+            font-family: 'Nunito', sans-serif;
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #d35400;
+            transition: all 0.1s ease;
+        }
+        .practice-form button:hover { background-color: #d8741b; transform: translateY(-1px); box-shadow: 0 5px 0 #d35400; }
+        .practice-form button:active { transform: translateY(1px); box-shadow: 0 3px 0 #d35400; }
+
+        /* --- Feedback Area --- */
+        .feedback-box {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            display: none; /* Hidden by default, shown by JS */
+        }
+        .feedback-box p { margin: 0; font-size: 1.1em; }
+        .feedback-box p strong { color: #2c3e50; }
+        .feedback-box pre { display: none; } /* Hide the raw JSON by default */
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div>
+        <h1>Letter Lesson: {{ letter }}</h1>
+        <a href="/" class="home-link">← Back to Home</a>
+    </div>
+
+    <div class="info-notice">
+        <strong>💡 Note:</strong> {{ message }}
+    </div>
+    
+    <a href="/letter_exercise/?letter={{ letter }}" class="cta-button">Start Exercises for '{{ letter }}' →</a>
+
+    <div class="card">
+        <h2>Let's Learn About '{{ letter }}'</h2>
+        <p id="intro-text">{{ intro }}</p>
+        <button class="play-button" data-speak-ref="intro-text">▶️ Play Intro</button>
+    </div>
+
+    <div class="card">
+        <h2>See the Letter</h2>
+        <p>This is how the letter looks. The red one is the one we are learning!</p>
+        <div class="font-samples">
+            {% for f in fonts %}
+            <div class="font-sample" style="font-family: {{ f }};">
+                <span class="highlight-letter">{{ letter }}</span>
+                <span>a b c d e f g h i j k l m n o p q r s t u v w x y z</span>
+                <span class="highlight-letter">{{ letter | lower }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Hear the Sounds</h2>
+        <p>This letter can make a few different sounds. Let's listen!</p>
+        <ul class="phoneme-list">
+            {% for p in lesson.all_phonemes %}
+            <li>
+                <strong>{{ p.symbol }}</strong> — as in "{{ p.example }}"
+                <button class="play-button" data-speak-text="The sound {{ p.symbol }}, as in {{ p.example }}.">
+                    ▶️ Play
+                </button>
+            </li>
+            {% endfor %}
+            {% if not lesson.all_phonemes %}
+            <li>No sound list available for this letter.</li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Practice the Sounds</h2>
+        {% for p in phonemes %}
+        <div class="practice-box">
+            <h3>Sound: {{ p.symbol }} (as in "{{ p.example }}")</h3>
+            <button class="play-button" data-speak-text="Now, you try to make the sound {{ p.symbol }} as in the word {{ p.example }}.">
+                ▶️ Play Instruction
+            </button>
+            <form method="post" enctype="multipart/form-data" class="practice-form">
+                <input type="hidden" name="sub" value="phoneme">
+                <input type="hidden" name="symbol" value="{{ p.symbol }}">
+                <div>
+                    <label>Your attempt (type here):</label>
+                    <input name="phoneme_attempt" value="">
+                </div>
+                <div>
+                    <label>Or record your voice:</label>
+                    <input type="file" name="phoneme_audio" accept="audio/*">
+                </div>
+                <button type="submit">Check My Sound!</button>
+            </form>
+            {% if phoneme_result and phoneme_result.target_phoneme == p.symbol %}
+            <div class="feedback-box" data-result='{{ phoneme_result | tojson | e }}'>
+                </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="card">
+        <h2>Practice with Words</h2>
+        {% for w in words %}
+        <div class="practice-box">
+            <h3>Word: {{ w.word }}</h3>
+            <p><em>Example:</em> {{ w.example_sentence }}</p>
+            <button class="play-button" data-speak-text="Let's practice the word {{ w.word }}. {{ w.example_sentence }}">
+                ▶️ Play Instruction
+            </button>
+            <form method="post" enctype="multipart/form-data" class="practice-form">
+                <input type="hidden" name="sub" value="word">
+                <input type="hidden" name="word" value="{{ w.word }}">
+                <div>
+                    <label>Your attempt (type here):</label>
+                    <input name="word_attempt" value="">
+                </div>
+                <div>
+                    <label>Or record your voice:</label>
+                    <input type="file" name="word_audio" accept="audio/*">
+                </div>
+                <button type="submit">Check My Word!</button>
+            </form>
+            {% if word_result and word_result.word == w.word %}
+            <div class="feedback-box" data-result='{{ word_result | tojson | e }}'>
+                 </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    let voices = [];
+
+    function loadVoices() {
+        voices = window.speechSynthesis.getVoices();
+    }
+    loadVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function speak(text) {
+        if (!text || !('speechSynthesis' in window)) return;
+
+        const utter = new SpeechSynthesisUtterance(text);
+        let preferredVoice = voices.find(voice => voice.name.includes('Google') && voice.lang.startsWith('en'));
+        if (!preferredVoice) {
+             preferredVoice = voices.find(voice => voice.lang.startsWith('en') && voice.default);
+        }
+        utter.voice = preferredVoice || voices.find(voice => voice.lang.startsWith('en'));
+        utter.pitch = 1.2;
+        utter.rate = 0.9;
+        utter.lang = 'en-US';
+        
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+    }
+    
+    // Attach event listeners to all play buttons
+    document.querySelectorAll('.play-button').forEach(button => {
+        button.addEventListener('click', () => {
+            let textToSpeak = button.dataset.speakText;
+            if (button.dataset.speakRef) {
+                const refElement = document.getElementById(button.dataset.speakRef);
+                textToSpeak = refElement ? refElement.textContent : '';
+            }
+            speak(textToSpeak);
+        });
+    });
+
+    /**
+     * This function parses the JSON result from your backend and displays it in a
+     * user-friendly way, replacing the old <pre> tag.
+     * You might need to adjust the `result.feedback` or `result.pronunciation_feedback`
+     * keys to match the exact structure of your JSON response.
+     */
+    function displayFriendlyFeedback(feedbackBox) {
+        try {
+            const result = JSON.parse(feedbackBox.dataset.result);
+            let feedbackText = result.feedback || result.pronunciation_feedback || "No feedback text provided.";
+            let isCorrect = result.correct === true; // Check for correctness
+            
+            // Create friendly HTML
+            const heading = isCorrect ? "Great job! 🎉" : "Good try! 👍";
+            const content = `<p><strong>${heading}</strong></p><p>${feedbackText}</p>`;
+            
+            feedbackBox.innerHTML = content;
+            feedbackBox.style.display = 'block'; // Make the box visible
+
+            // Optionally, create and add a button to play the feedback aloud
+            const playButton = document.createElement('button');
+            playButton.className = 'play-button';
+            playButton.style.marginTop = '12px';
+            playButton.textContent = '▶️ Play Feedback';
+            playButton.onclick = () => speak(feedbackText);
+            feedbackBox.appendChild(playButton);
+
+        } catch (e) {
+            console.error("Could not parse feedback JSON:", e);
+            feedbackBox.innerHTML = "<p>Could not display feedback.</p>";
+            feedbackBox.style.display = 'block';
+        }
+    }
+
+    // Process all feedback boxes on the page
+    document.querySelectorAll('.feedback-box').forEach(displayFriendlyFeedback);
+
+</script>
+</body>
 </html>
