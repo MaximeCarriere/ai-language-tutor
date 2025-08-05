@@ -8,7 +8,7 @@ from languages import get_lang_config, get_translations
 
 bp = Blueprint("letter", __name__, template_folder="../templates")
 
-@bp.route("", methods=["GET", "POST"])
+@bp.route("/", methods=["GET", "POST"])
 def letter_practice():
     # Get language from URL query, default to English
     lang_code = request.args.get('lang', 'en')
@@ -29,8 +29,13 @@ def letter_practice():
         letter = request.form.get("letter", initial_letter)
         attempt = request.form.get("attempt", "").strip()
         
-        # Make the AI prompt language-aware
-        prompt = build_letter_prompt(letter, lang_config['name'], learner_attempt=attempt)
+        # MODIFIED: Use keyword arguments to prevent the TypeError
+        prompt = build_letter_prompt(
+            letter=letter,
+            language_name=lang_config['name'],
+            learner_attempt=attempt
+        )
+        
         raw = call_gemma_cli(prompt)
         try:
             structured = json.loads(raw.strip().split("\n")[-1])
@@ -46,7 +51,7 @@ def letter_practice():
         attempt=request.form.get("attempt", ""),
         lang_config=lang_config,
         lang_code=lang_code,
-        t=translations  # <-- THE FIX: Pass the translations dictionary to the template
+        t=translations
     )
 
 @bp.route("/letter_sound")

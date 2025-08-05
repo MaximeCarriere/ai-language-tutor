@@ -1,332 +1,229 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ lang_code }}" dir="{{ lang_config.direction }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Letter Lesson: {{ letter }}</title>
+    <title>{{ t.letter_lesson_title }}: {{ letter }}</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&family=Amiri:wght@400;700&family=Lateef&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- General Layout & Typography --- */
         *, *::before, *::after { box-sizing: border-box; }
-
-        body {
-            font-family: 'Nunito', system-ui, -apple-system, sans-serif;
-            background-color: #f0f4f8;
-            color: #34495e;
-            margin: 0;
-            padding: 24px;
-        }
-
-        .main-container {
-            max-width: 800px;
-            margin: 0 auto;
-            display: grid;
-            gap: 32px;
-        }
-
+        body { font-family: {{ lang_config.font | safe }}; background-color: #f0f4f8; color: #34495e; margin: 0; padding: 24px; }
+        .main-container { max-width: 800px; margin: 0 auto; display: grid; gap: 32px; }
         h1, h2, h3 { color: #2c3e50; text-align: center; }
         h1 { font-size: 2.8em; margin: 0; }
         h2 { font-size: 1.8em; margin-top: 0; border-bottom: 2px dashed #e0e0e0; padding-bottom: 12px; }
         h3 { font-size: 1.4em; text-align: left; }
         p { line-height: 1.6; font-size: 1.1em; }
-
-        /* --- UI Cards & Notices --- */
-        .card {
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 24px 32px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        }
-        
-        .info-notice {
-            display: {% if message %}block{% else %}none{% endif %};
-            background: #fef5e7;
-            border: 2px solid #f39c12;
-            color: #c0392b;
-            padding: 16px;
-            border-radius: 16px;
-        }
-
-        /* --- Buttons & Links --- */
+        .card { background: #ffffff; border-radius: 24px; padding: 24px 32px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); }
         .home-link { display: block; width: fit-content; margin: 8px auto 0 auto; color: #3498db; text-decoration: none; font-weight: 700; }
-        
-        .cta-button {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            background-color: #2ecc71;
-            color: white;
-            border-radius: 16px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.3em;
-            text-align: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 5px 0 #27ae60;
-        }
+        .cta-button { display: block; width: 100%; padding: 16px; background-color: #2ecc71; color: white; border-radius: 16px; text-decoration: none; font-weight: 700; font-size: 1.3em; text-align: center; transition: all 0.2s ease; box-shadow: 0 5px 0 #27ae60; }
         .cta-button:hover { background-color: #2abd69; transform: translateY(-2px); box-shadow: 0 7px 0 #27ae60; }
-        .cta-button:active { transform: translateY(2px); box-shadow: 0 3px 0 #27ae60; }
-
-        .play-button {
-            font-family: 'Nunito', sans-serif;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 1em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+        .play-button { font-family: 'Nunito', sans-serif; background-color: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 1em; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
         .play-button:hover { background-color: #2980b9; transform: scale(1.05); }
+        
+        .font-samples { text-align: center; display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media (min-width: 600px) { .font-samples { grid-template-columns: 1fr 1fr; } }
+        .font-sample { border: 2px solid #ecf0f1; border-radius: 16px; padding: 16px; }
+        
+        /* MODIFIED: Adjusted font size to fit more letters */
+        .font-sample .case { font-size: clamp(3rem, 12vw, 5rem); line-height: 1.2; word-spacing: 0.2em; }
+        
+        .font-sample .font-name { font-size: 1em; color: #7f8c8d; margin-top: 8px; font-family: sans-serif; }
+        .highlight-letter { color: #e74c3c; }
 
-        /* --- Content Specific Styles --- */
-        .font-samples { text-align: center; }
-        .font-sample { font-size: 80px; margin: 16px 0; display: block; }
-        .highlight-letter { color: #e74c3c; font-weight: 800; }
-        
         .phoneme-list { list-style: none; padding-left: 0; }
-        .phoneme-list li { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; font-size: 1.1em; }
-        
+        .phoneme-list li { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; font-size: 1.1em; flex-wrap: wrap; }
         .practice-box { margin-top: 16px; padding: 16px; border: 2px dashed #ddd; border-radius: 16px; }
-        
-        /* --- Forms --- */
         .practice-form { display: grid; gap: 16px; margin-top: 16px; }
         .practice-form label { font-weight: 700; font-size: 1.1em; display: block; margin-bottom: 4px; }
-        .practice-form input[type="text"], .practice-form input[type="file"] {
-            font-family: 'Nunito', sans-serif;
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ccc;
-            border-radius: 12px;
-            font-size: 1.1em;
-        }
-        .practice-form button {
-            justify-self: start;
-            font-family: 'Nunito', sans-serif;
-            background-color: #e67e22;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 1.1em;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #d35400;
-            transition: all 0.1s ease;
-        }
-        .practice-form button:hover { background-color: #d8741b; transform: translateY(-1px); box-shadow: 0 5px 0 #d35400; }
-        .practice-form button:active { transform: translateY(1px); box-shadow: 0 3px 0 #d35400; }
-
-        /* --- Feedback Area --- */
-        .feedback-box {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 16px;
-            display: none; /* Hidden by default, shown by JS */
-        }
-        .feedback-box p { margin: 0; font-size: 1.1em; }
-        .feedback-box p strong { color: #2c3e50; }
-        .feedback-box pre { display: none; } /* Hide the raw JSON by default */
+        .practice-form input[type="text"], .practice-form input[type="file"] { font-family: inherit; width: 100%; padding: 12px; border: 2px solid #ccc; border-radius: 12px; font-size: 1.1em; }
+        .practice-form button { justify-self: start; font-family: 'Nunito', sans-serif; background-color: #e67e22; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-size: 1.1em; font-weight: 700; cursor: pointer; box-shadow: 0 4px 0 #d35400; transition: all 0.1s ease; }
+        .practice-form button:hover { background-color: #d8741b; transform: translateY(-1px); }
+        .feedback-box { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 16px; margin-top: 16px; display: none; }
+        .voice-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 16px; }
+        .voice-controls label { font-weight: 700; }
+        .voice-controls select { font-family: inherit; font-size: 1em; padding: 8px; border-radius: 8px; }
     </style>
 </head>
 <body>
 
 <div class="main-container">
     <div>
-        <h1>Letter Lesson: {{ letter }}</h1>
-        <a href="/" class="home-link">← Back to Home</a>
-    </div>
-
-    <div class="info-notice">
-        <strong>💡 Note:</strong> {{ message }}
+        <h1>{{ t.letter_lesson_title }}: {{ letter }}</h1>
+        <a href="/?lang={{ lang_code }}" class="home-link">← {{ t.back_to_home }}</a>
     </div>
     
-    <a href="/letter_exercise/?letter={{ letter }}" class="cta-button">Start Exercises for '{{ letter }}' →</a>
+    <a href="/letter?letter={{ letter }}&lang={{ lang_code }}" class="cta-button">{{ t.start_practice_button.replace('{letter}', letter) }} →</a>
 
     <div class="card">
-        <h2>Let's Learn About '{{ letter }}'</h2>
-        <p id="intro-text">{{ intro }}</p>
-        <button class="play-button" data-speak-ref="intro-text">▶️ Play Intro</button>
+        <h2>{{ t.learn_about_header.replace('{letter}', letter) }}</h2>
+        <p id="intro-text">{{ lesson.intro }}</p>
+        <div class="voice-controls">
+            <button class="play-button" data-speak-ref="intro-text">▶️ {{ t.play_intro_button }}</button>
+            <div>
+                <label for="voice-selector">{{ t.tutors_voice }}:</label>
+                <select id="voice-selector"></select>
+            </div>
+        </div>
     </div>
 
     <div class="card">
-        <h2>See the Letter</h2>
-        <p>This is how the letter looks. The red one is the one we are learning!</p>
+        <h2>{{ t.see_the_letter_header }}</h2>
+        <p>{{ t.how_it_looks_text }}</p>
         <div class="font-samples">
-            {% for f in fonts %}
-            <div class="font-sample" style="font-family: {{ f }};">
-                <span class="highlight-letter">{{ letter }}</span>
-                <span>a b c d e f g h i j k l m n o p q r s t u v w x y z</span>
-                <span class="highlight-letter">{{ letter | lower }}</span>
+            {% for font in lang_config.sample_fonts %}
+            <div class="font-sample">
+                <div class="case" style="font-family: {{ font | safe }};">
+                    {% for char in context_letters %}
+                        {% if char|upper == letter|upper %}
+                            <span class="highlight-letter">{{ char|upper }}</span>
+                        {% else %}
+                            <span>{{ char|upper }}</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="case" style="font-family: {{ font | safe }};">
+                    {% for char in context_letters %}
+                        {% if char|lower == letter|lower %}
+                            <span class="highlight-letter">{{ char|lower }}</span>
+                        {% else %}
+                            <span>{{ char|lower }}</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="font-name">{{ font.split(',')[0].replace("'", "") }}</div>
             </div>
             {% endfor %}
         </div>
     </div>
 
     <div class="card">
-        <h2>Hear the Sounds</h2>
-        <p>This letter can make a few different sounds. Let's listen!</p>
+        <h2>{{ t.hear_sounds_header }}</h2>
+        <p>{{ t.sounds_intro_text }}</p>
         <ul class="phoneme-list">
-            {% for p in lesson.all_phonemes %}
+            {% for p in lesson.phonemes %}
             <li>
-                <strong>{{ p.symbol }}</strong> — as in "{{ p.example }}"
-                <button class="play-button" data-speak-text="The sound {{ p.symbol }}, as in {{ p.example }}.">
-                    ▶️ Play
-                </button>
+                <strong>{{ p.symbol }}</strong> — {{ t.as_in_text }} "{{ p.example }}"
+                <button class="play-button" data-speak-text="{{ p.example }}">▶️ {{ t.play_sound_button }}</button>
             </li>
             {% endfor %}
-            {% if not lesson.all_phonemes %}
-            <li>No sound list available for this letter.</li>
-            {% endif %}
         </ul>
     </div>
 
     <div class="card">
-        <h2>Practice the Sounds</h2>
-        {% for p in phonemes %}
+        <h2>{{ t.practice_sounds_header }}</h2>
+        {% for p in lesson.phonemes %}
         <div class="practice-box">
-            <h3>Sound: {{ p.symbol }} (as in "{{ p.example }}")</h3>
-            <button class="play-button" data-speak-text="Now, you try to make the sound {{ p.symbol }} as in the word {{ p.example }}.">
-                ▶️ Play Instruction
-            </button>
-            <form method="post" enctype="multipart/form-data" class="practice-form">
+            <h3>{{ t.sound_text }}: {{ p.symbol }} ({{ t.as_in_text }} "{{ p.example }}")</h3>
+            <button class="play-button" data-speak-text="{{ t.sound_text }} {{ p.symbol }}. {{ t.as_in_text }} {{ p.example }}.">▶️ {{ t.play_instruction_button }}</button>
+            <form method="post" enctype="multipart/form-data" class="practice-form" action="?lang={{ lang_code }}&letter={{ letter }}">
                 <input type="hidden" name="sub" value="phoneme">
                 <input type="hidden" name="symbol" value="{{ p.symbol }}">
-                <div>
-                    <label>Your attempt (type here):</label>
-                    <input name="phoneme_attempt" value="">
-                </div>
-                <div>
-                    <label>Or record your voice:</label>
-                    <input type="file" name="phoneme_audio" accept="audio/*">
-                </div>
-                <button type="submit">Check My Sound!</button>
+                <div><label>{{ t.your_attempt_label }}</label><input name="phoneme_attempt" value=""></div>
+                <div><label>{{ t.record_voice_label }}</label><input type="file" name="phoneme_audio" accept="audio/*"></div>
+                <button type="submit">{{ t.check_my_sound_button }}</button>
             </form>
             {% if phoneme_result and phoneme_result.target_phoneme == p.symbol %}
-            <div class="feedback-box" data-result='{{ phoneme_result | tojson | e }}'>
-                </div>
+            <div class="feedback-box" data-result='{{ phoneme_result | tojson | e }}'></div>
             {% endif %}
         </div>
         {% endfor %}
     </div>
 
     <div class="card">
-        <h2>Practice with Words</h2>
-        {% for w in words %}
+        <h2>{{ t.practice_words_header }}</h2>
+        {% for w in lesson.words %}
         <div class="practice-box">
-            <h3>Word: {{ w.word }}</h3>
-            <p><em>Example:</em> {{ w.example_sentence }}</p>
-            <button class="play-button" data-speak-text="Let's practice the word {{ w.word }}. {{ w.example_sentence }}">
-                ▶️ Play Instruction
-            </button>
-            <form method="post" enctype="multipart/form-data" class="practice-form">
+            <h3>{{ t.word_text }}: {{ w.word }}</h3>
+            <p><em>{{ t.example_text }}:</em> {{ w.example_sentence }}</p>
+            <button class="play-button" data-speak-text="{{ t.word_text }}. {{ w.word }}.">▶️ {{ t.play_instruction_button }}</button>
+            <form method="post" enctype="multipart/form-data" class="practice-form" action="?lang={{ lang_code }}&letter={{ letter }}">
                 <input type="hidden" name="sub" value="word">
                 <input type="hidden" name="word" value="{{ w.word }}">
-                <div>
-                    <label>Your attempt (type here):</label>
-                    <input name="word_attempt" value="">
-                </div>
-                <div>
-                    <label>Or record your voice:</label>
-                    <input type="file" name="word_audio" accept="audio/*">
-                </div>
-                <button type="submit">Check My Word!</button>
+                <div><label>{{ t.your_attempt_label }}</label><input name="word_attempt" value=""></div>
+                <div><label>{{ t.record_voice_label }}</label><input type="file" name="word_audio" accept="audio/*"></div>
+                <button type="submit">{{ t.check_my_word_button }}</button>
             </form>
             {% if word_result and word_result.word == w.word %}
-            <div class="feedback-box" data-result='{{ word_result | tojson | e }}'>
-                 </div>
+            <div class="feedback-box" data-result='{{ word_result | tojson | e }}'></div>
             {% endif %}
         </div>
         {% endfor %}
     </div>
-
 </div>
 
 <script>
+    const langConfig = {{ lang_config | tojson }};
+    const t = {{ t | tojson }};
+    const voiceSelector = document.getElementById('voice-selector');
     let voices = [];
 
-    function loadVoices() {
-        voices = window.speechSynthesis.getVoices();
-    }
-    loadVoices();
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-        window.speechSynthesis.onvoiceschanged = loadVoices;
+    function populateVoiceList() {
+        if (!('speechSynthesis' in window)) return;
+        voices = speechSynthesis.getVoices();
+        voiceSelector.innerHTML = '';
+        const langVoices = voices.filter(voice => voice.lang.startsWith(langConfig.code.split('-')[0]));
+        langVoices.forEach(voice => {
+            const option = document.createElement('option');
+            option.textContent = `${voice.name} (${voice.lang})`;
+            option.setAttribute('data-name', voice.name);
+            voiceSelector.appendChild(option);
+        });
     }
 
     function speak(text) {
         if (!text || !('speechSynthesis' in window)) return;
-
         const utter = new SpeechSynthesisUtterance(text);
-        let preferredVoice = voices.find(voice => voice.name.includes('Google') && voice.lang.startsWith('en'));
-        if (!preferredVoice) {
-             preferredVoice = voices.find(voice => voice.lang.startsWith('en') && voice.default);
-        }
-        utter.voice = preferredVoice || voices.find(voice => voice.lang.startsWith('en'));
-        utter.pitch = 1.2;
-        utter.rate = 0.9;
-        utter.lang = 'en-US';
-        
+        const selectedVoiceName = voiceSelector.selectedOptions[0]?.getAttribute('data-name');
+        const selectedVoice = voices.find(voice => voice.name === selectedVoiceName);
+        utter.voice = selectedVoice;
+        utter.lang = langConfig.code;
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utter);
     }
     
-    // Attach event listeners to all play buttons
     document.querySelectorAll('.play-button').forEach(button => {
         button.addEventListener('click', () => {
             let textToSpeak = button.dataset.speakText;
             if (button.dataset.speakRef) {
                 const refElement = document.getElementById(button.dataset.speakRef);
-                textToSpeak = refElement ? refElement.textContent : '';
+                textToSpeak = refElement ? refElement.textContent.trim() : '';
             }
             speak(textToSpeak);
         });
     });
 
-    /**
-     * This function parses the JSON result from your backend and displays it in a
-     * user-friendly way, replacing the old <pre> tag.
-     * You might need to adjust the `result.feedback` or `result.pronunciation_feedback`
-     * keys to match the exact structure of your JSON response.
-     */
     function displayFriendlyFeedback(feedbackBox) {
         try {
             const result = JSON.parse(feedbackBox.dataset.result);
-            let feedbackText = result.feedback || result.pronunciation_feedback || "No feedback text provided.";
-            let isCorrect = result.correct === true; // Check for correctness
-            
-            // Create friendly HTML
-            const heading = isCorrect ? "Great job! 🎉" : "Good try! 👍";
+            let feedbackText = result.feedback || "No feedback text provided.";
+            let isCorrect = result.correct === true;
+            const heading = isCorrect ? t.great_job_feedback : t.good_try_feedback;
             const content = `<p><strong>${heading}</strong></p><p>${feedbackText}</p>`;
-            
             feedbackBox.innerHTML = content;
-            feedbackBox.style.display = 'block'; // Make the box visible
-
-            // Optionally, create and add a button to play the feedback aloud
+            feedbackBox.style.display = 'block';
             const playButton = document.createElement('button');
             playButton.className = 'play-button';
             playButton.style.marginTop = '12px';
-            playButton.textContent = '▶️ Play Feedback';
+            playButton.textContent = `▶️ ${t.play_feedback_button}`;
             playButton.onclick = () => speak(feedbackText);
             feedbackBox.appendChild(playButton);
-
         } catch (e) {
             console.error("Could not parse feedback JSON:", e);
-            feedbackBox.innerHTML = "<p>Could not display feedback.</p>";
-            feedbackBox.style.display = 'block';
         }
     }
 
-    // Process all feedback boxes on the page
     document.querySelectorAll('.feedback-box').forEach(displayFriendlyFeedback);
-
+    
+    populateVoiceList();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = populateVoiceList;
+    }
 </script>
 </body>
 </html>

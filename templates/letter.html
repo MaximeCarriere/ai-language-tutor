@@ -128,15 +128,8 @@
             background-color: #2ecc71;
             box-shadow: 0 4px 0 #27ae60;
         }
-        .button-submit:hover {
-            background-color: #2abd69;
-            transform: translateY(-1px);
-            box-shadow: 0 5px 0 #27ae60;
-        }
-        .button-submit:active {
-            transform: translateY(1px);
-            box-shadow: 0 3px 0 #27ae60;
-        }
+        .button-submit:hover { background-color: #2abd69; transform: translateY(-1px); box-shadow: 0 5px 0 #27ae60; }
+        .button-submit:active { transform: translateY(1px); box-shadow: 0 3px 0 #27ae60; }
         
         pre {
             background-color: #ecf0f1;
@@ -144,6 +137,30 @@
             border-radius: 8px;
             white-space: pre-wrap;
             word-wrap: break-word;
+        }
+
+        /* --- ADDED: Styles for the new 'Go to Lesson' button --- */
+        .lesson-link-button {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #e67e22;
+            box-shadow: 0 4px 0 #d35400;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-top: 16px;
+            text-align: center;
+            visibility: hidden; /* Hidden by default */
+            transition: all 0.2s ease;
+        }
+        .lesson-link-button:hover {
+            background-color: #d8741b;
+            transform: translateY(-1px);
+        }
+        .lesson-link-button.visible {
+            visibility: visible;
         }
 
     </style>
@@ -163,6 +180,7 @@
                   <div class="letter-box" data-letter="{{ ch }}">{{ ch }}</div>
                 {% endfor %}
             </div>
+            <a href="#" id="go-to-lesson-btn" class="lesson-link-button"></a>
         </div>
 
         <div class="card">
@@ -173,8 +191,8 @@
                     <input type="text" id="letter-input" name="letter" value="{{ letter }}" readonly style="background:#eee; text-align:center; font-weight:bold; font-size:1.5em;">
                 </div>
                 <div class="form-group">
-                    <label for="attempt-input">{{ t.your_attempt }}</label>
-                    <input type="text" id="attempt-input" name="attempt" placeholder="{{ t.type_letter_here }}" value="{{ attempt }}" autocomplete="off" autofocus>
+                    <label for="attempt-input">{{ t.your_attempt_label }}</label>
+                    <input type="text" id="attempt-input" name="attempt" placeholder="" value="{{ attempt }}" autocomplete="off" autofocus>
                 </div>
                 <div>
                     <button type="submit" class="button button-submit">{{ t.check_my_typing }}</button>
@@ -202,10 +220,14 @@
         const alphabetDiv = document.getElementById("alphabet");
         const letterInput = document.getElementById("letter-input");
         const attemptInput = document.getElementById("attempt-input");
+        // ADDED: Get a reference to the new button
+        const goToLessonBtn = document.getElementById('go-to-lesson-btn');
 
         async function fetchPronunciation(letter) {
             try {
-                const resp = await fetch(`/letter_sound?letter=${encodeURIComponent(letter)}&lang=${langCode}`);
+                // Corrected the URL to include the blueprint prefix
+                const resp = await fetch(`/letter/letter_sound?letter=${encodeURIComponent(letter)}&lang=${langCode}`);
+                if (!resp.ok) return `The letter ${letter}.`;
                 const data = await resp.json();
                 return data.speak_text;
             } catch (e) {
@@ -215,7 +237,7 @@
         }
         
         function selectLetter(letter) {
-             // Visual selection
+            // Visual selection
             document.querySelectorAll(".letter-box").forEach(b => b.classList.remove("selected"));
             const targetBox = document.querySelector(`.letter-box[data-letter="${letter}"]`);
             if(targetBox) {
@@ -227,6 +249,13 @@
             
             // Focus on the typing area
             if(attemptInput) attemptInput.focus();
+
+            // ADDED: Update and show the "Go to Lesson" button
+            if (goToLessonBtn) {
+                goToLessonBtn.href = `/letter_lesson?letter=${encodeURIComponent(letter)}&lang=${langCode}`;
+                goToLessonBtn.textContent = t.go_to_lesson_button.replace('{letter}', letter);
+                goToLessonBtn.classList.add('visible');
+            }
         }
 
         alphabetDiv.querySelectorAll(".letter-box").forEach(box => {
@@ -234,7 +263,6 @@
             box.addEventListener("click", async () => {
                 selectLetter(letter);
 
-                // Fetch and speak via TTS
                 const speakText = await fetchPronunciation(letter);
                 if ('speechSynthesis' in window) {
                     const utter = new SpeechSynthesisUtterance(speakText);
