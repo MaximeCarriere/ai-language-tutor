@@ -1,72 +1,191 @@
 <!doctype html>
-<html>
+<html lang="{{ lang_code }}" dir="{{ lang_config.direction }}">
 <head>
-    <title>Word Exercises</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t.word_exercise_title }}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
-        .section { border: 1px solid #ccc; padding: 16px; margin-bottom: 24px; border-radius: 8px; text-align: center; }
-        .image-container { margin-bottom: 16px; }
-        .image-container img { max-width: 300px; height: auto; border-radius: 8px; border: 1px solid #ddd; }
-        .choices { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-        .choice-btn { padding: 12px 20px; cursor: pointer; border-radius: 6px; border: 1px solid #444; background: #f0f0f0; font-size: 1.1em; }
-        .choice-btn.correct { background: #c8f7c5; border-color: #2e7d32; }
-        .choice-btn.wrong { background: #f7c5c5; border-color: #c62828; }
-        .feedback { margin-top: 16px; font-weight: 600; font-size: 1.2em; }
-        .next-link { display: none; margin-top: 12px; padding: 8px 16px; background: #4477cc; color: white; text-decoration: none; border-radius: 5px; }
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: {{ lang_config.font | safe }};
+            background-color: #f0f4f8;
+            color: #34495e;
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin: 0 0 8px 0;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px S30px rgba(0, 0, 0, 0.08);
+        }
+
+        .exercise-image {
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border: 5px solid #ecf0f1;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .choice-button {
+            font-family: inherit;
+            font-size: 1.2em;
+            font-weight: 700;
+            padding: 16px;
+            border-radius: 16px;
+            border: 2px solid #bdc3c7;
+            background-color: #fff;
+            color: #34495e;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .choice-button:hover:not(:disabled) {
+            border-color: #3498db;
+            background-color: #ecf0f1;
+        }
+        
+        .choice-button.correct {
+            background-color: #2ecc71;
+            border-color: #27ae60;
+            color: white;
+        }
+        
+        .choice-button.incorrect {
+            background-color: #e74c3c;
+            border-color: #c0392b;
+            color: white;
+        }
+
+        .feedback-area {
+            margin-top: 24px;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-height: 30px;
+        }
+        
+        .feedback-area .correct { color: #27ae60; }
+        .feedback-area .incorrect { color: #c0392b; }
+
+        .button-next {
+            font-family: 'Nunito', sans-serif;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            background-color: #3498db;
+            box-shadow: 0 4px 0 #2980b9;
+            text-decoration: none;
+            display: inline-block;
+            visibility: hidden; /* Hidden by default */
+            margin-top: 16px;
+        }
+
     </style>
 </head>
 <body>
-    <h1>Word Exercises (Level C)</h1>
-    <a href="/">← Home</a>
+    <div class="main-container">
+        <h1>{{ t.word_exercise_title }}</h1>
+        <a href="/?lang={{ lang_code }}" class="home-link">← {{ t.back_to_home }}</a>
 
-    <div class="section">
-        <h2>What is this?</h2>
-        <div class="image-container">
-            <img src="{{ exercise.image_url }}" alt="Object to identify">
+        <div class="card">
+            <img src="{{ exercise.image_url }}" alt="{{ t.choose_correct_word }}" class="exercise-image">
+            <h2>{{ t.choose_correct_word }}</h2>
+            <div class="choices-grid" id="choices-grid">
+                {% for choice in exercise.choices %}
+                    <button class="choice-button" data-word="{{ choice }}">{{ choice }}</button>
+                {% endfor %}
+            </div>
+            
+            <div id="feedback-area" class="feedback-area"></div>
+            <a href="?lang={{ lang_code }}" id="next-button" class="button-next">{{ t.next_question }}</a>
         </div>
-        <div class="choices" data-correct-word="{{ exercise.correct_word | lower }}">
-            {% for choice in exercise.choices %}
-                <button class="choice-btn">{{ choice }}</button>
-            {% endfor %}
-        </div>
-        <div class="feedback" aria-live="polite"></div>
-        <a href="/word_exercise" class="next-link">Next →</a>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const choicesContainer = document.querySelector('.choices');
-            const correctWord = choicesContainer.dataset.correctWord;
-            const feedbackEl = document.querySelector('.feedback');
-            const nextLink = document.querySelector('.next-link');
+        const choicesGrid = document.getElementById('choices-grid');
+        const feedbackArea = document.getElementById('feedback-area');
+        const nextButton = document.getElementById('next-button');
+        const correctWord = "{{ exercise.correct_word }}";
+        const t = {{ t | tojson }};
 
-            choicesContainer.addEventListener('click', (event) => {
-                if (event.target.classList.contains('choice-btn')) {
-                    const selectedWord = event.target.textContent.toLowerCase();
-                    const allButtons = choicesContainer.querySelectorAll('.choice-btn');
+        choicesGrid.addEventListener('click', (event) => {
+            const clickedButton = event.target.closest('.choice-button');
+            if (!clickedButton || clickedButton.disabled) {
+                return; // Didn't click a button or already answered
+            }
 
-                    // Disable all buttons after a choice is made
-                    allButtons.forEach(btn => btn.disabled = true);
-
-                    if (selectedWord === correctWord) {
-                        event.target.classList.add('correct');
-                        feedbackEl.textContent = '✅ Correct!';
-                        feedbackEl.style.color = 'green';
-                    } else {
-                        event.target.classList.add('wrong');
-                        feedbackEl.textContent = `❌ That's a "${selectedWord}". Try the next one!`;
-                        feedbackEl.style.color = 'red';
-                        // Highlight the correct answer
-                        allButtons.forEach(btn => {
-                            if (btn.textContent.toLowerCase() === correctWord) {
-                                btn.classList.add('correct');
-                            }
-                        });
-                    }
-                    // Show the "Next" button
-                    nextLink.style.display = 'inline-block';
-                }
+            // Disable all buttons
+            document.querySelectorAll('.choice-button').forEach(button => {
+                button.disabled = true;
             });
+
+            const chosenWord = clickedButton.dataset.word;
+            
+            if (chosenWord === correctWord) {
+                clickedButton.classList.add('correct');
+                feedbackArea.innerHTML = `<span class="correct">${t.correct_answer}</span>`;
+            } else {
+                clickedButton.classList.add('incorrect');
+                feedbackArea.innerHTML = `<span class="incorrect">${t.incorrect_answer} "${correctWord}"</span>`;
+                // Also highlight the correct answer
+                const correctButton = document.querySelector(`.choice-button[data-word="${correctWord}"]`);
+                if (correctButton) {
+                    correctButton.classList.add('correct');
+                }
+            }
+
+            // Show the 'Next Question' button
+            nextButton.style.visibility = 'visible';
         });
     </script>
 </body>

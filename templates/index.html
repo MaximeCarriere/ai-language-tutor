@@ -134,7 +134,6 @@
         <h1 id="main-title">Pocket Tutor</h1>
         <p class="subtitle" id="subtitle">Your Fun Learning Adventure!</p>
 
-        <!-- Language Selector -->
         <div class="lang-selector">
             <label for="lang-select" id="lang-label">Choose your language:</label>
             <select id="lang-select" onchange="updatePageLanguage()">
@@ -146,8 +145,7 @@
 
         <h2 id="activity-title">Choose an Activity</h2>
         <ul id="learning-links">
-            <!-- Links are dynamically generated here -->
-        </ul>
+            </ul>
 
         <p class="footer-note">Offline-first & private, powered by Gemma 3n.</p>
     </div>
@@ -164,8 +162,7 @@
                     { href: '/word_lesson', text: 'Word Lessons', icon: '📖' },
                     { href: '/word_exercise', text: 'Word Exercises', icon: '✏️' },
                     { href: '/letter_drawing', text: 'Letter Drawing', icon: '🎨' },
-                    { href: '/vocab', text: 'Vocabulary & Pronunciation', icon: '🗣️' },
-                    { href: '/describe', text: 'Describe a Picture', icon: '�️' },
+                    { href: '/describe', text: 'Describe a Picture', icon: '🖼️' },
                     { href: '/math', text: 'Basic Math', icon: '➕' }
                 ]
             },
@@ -178,7 +175,9 @@
                     { href: '/letter', text: 'تمرين الحروف', icon: '🔤' },
                     { href: '/word_lesson', text: 'دروس الكلمات', icon: '📖' },
                     { href: '/word_exercise', text: 'تمارين الكلمات', icon: '✏️' },
-                    { href: '/letter_drawing', text: 'رسم الحروف', icon: '🎨' }
+                    { href: '/letter_drawing', text: 'رسم الحروف', icon: '🎨' },
+                    // ADDED for Arabic
+                    { href: '/describe', text: 'وصف صورة', icon: '🖼️' }
                 ]
             },
             prs: {
@@ -187,10 +186,12 @@
                 lang_label: "زبان خود را انتخاب کنید:",
                 activity_title: "یک فعالیت را انتخاب کنید",
                 links: [
-                    { href: '/letter', text: 'تمرین حروف', icon: '🔤' },
+                    { href: '/letter', text: 'تمرین حروف', icon: 'n' },
                     { href: '/word_lesson', text: 'درس های کلمه', icon: '📖' },
                     { href: '/word_exercise', text: 'تمرین های کلمه', icon: '✏️' },
-                    { href: '/letter_drawing', text: 'ترسیم حروف', icon: '🎨' }
+                    { href: '/letter_drawing', text: 'ترسیم حروف', icon: '🎨' },
+                    // ADDED for Dari
+                    { href: '/describe', text: 'توصیف یک عکس', icon: '🖼️' }
                 ]
             }
         };
@@ -229,4 +230,3 @@
     </script>
 </body>
 </html>
-�

@@ -61,6 +61,6 @@ def call_gemma_cli(prompt: str, image_path: str | None = None, timeout: int = 25
     except Exception as e:
         return json.dumps({"error": f"Ollama invocation failed: {e}"})
     output = proc.stdout.strip()
-    if proc.stderr:
-        output += f"\n\n[stderr]\n{proc.stderr.strip()}"
+    #if proc.stderr:
+    #    output += f"\n\n[stderr]\n{proc.stderr.strip()}"
     return output

@@ -10,7 +10,6 @@ def create_app():
 
     # --- Register blueprints ---
     from routes.home import bp as home_bp
-    from routes.vocab import bp as vocab_bp
     from routes.describe import bp as describe_bp
     from routes.math import bp as math_bp
     from routes.letter import bp as letter_bp
@@ -21,7 +20,6 @@ def create_app():
     from routes.letter_drawing import bp as letter_drawing_bp # <-- ADD THIS
 
     app.register_blueprint(home_bp)
-    app.register_blueprint(vocab_bp, url_prefix="/vocab")
     app.register_blueprint(describe_bp, url_prefix="/describe")
     app.register_blueprint(math_bp, url_prefix="/math")
     app.register_blueprint(letter_bp, url_prefix="/letter")

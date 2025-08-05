@@ -1,60 +1,47 @@
 import random
-from flask import Blueprint, render_template
+# MODIFIED: Import 'request' and our language helper functions
+from flask import Blueprint, render_template, request
+from languages import get_lang_config, get_translations, get_vocabulary_data
 
 bp = Blueprint("word_lesson", __name__, template_folder="../templates")
 
-# This is your new "database" of word lessons.
-# Make sure you have these images in a `static/images/` folder.
-WORD_LESSONS = [
-    {
-        "word": "Apple",
-        "image": "apple.jpg",
-        "syllables": "Ap-ple",
-        "meaning": "A round fruit with red or green skin and a crisp texture.",
-        "example_sentence": "I like to eat an apple for a snack."
-    },
-    {
-        "word": "Ball",
-        "image": "ball.jpg",
-        "syllables": "Ball",
-        "meaning": "A round object used in games and sports.",
-        "example_sentence": "The boy threw the red ball."
-    },
-    {
-        "word": "Car",
-        "image": "car.jpg",
-        "syllables": "Car",
-        "meaning": "A road vehicle, typically with four wheels, powered by an engine.",
-        "example_sentence": "The car is driving down the street."
-    },
-    {
-        "word": "Dog",
-        "image": "dog.jpg",
-        "syllables": "Dog",
-        "meaning": "A domesticated animal with four legs, a tail, and fur.",
-        "example_sentence": "The dog likes to play fetch."
-    },
-    {
-        "word": "Sun",
-        "image": "sun.jpg",
-        "syllables": "Sun",
-        "meaning": "The star that provides light and heat to the Earth.",
-        "example_sentence": "The sun is bright and yellow."
-    }
-]
 
-def get_word_lesson():
-    """Selects a random lesson and prepares its data for the template."""
-    lesson = random.choice(WORD_LESSONS)
-    # Construct the full URL for the image
+# REMOVED: The hard-coded English lesson list is no longer needed.
+# This data now lives in the VOCABULARY_DATA dictionary in languages.py.
+
+
+# MODIFIED: This function now gets a random lesson for a specific language.
+def get_random_lesson(lang_code='en'):
+    """Selects a random, detailed word lesson for the given language."""
+    # Get all vocabulary data for the specified language.
+    vocab = get_vocabulary_data(lang_code)
+    
+    # The 'exercises' list in our data contains the detailed lesson info.
+    # We just need to pick one to be our lesson for this page.
+    lesson = random.choice(vocab["exercises"])
+    
+    # Construct the full URL for the image and add it to the dictionary.
     lesson["image_url"] = f"/static/images/{lesson['image']}"
     return lesson
 
-# --- CORRECTED CODE ---
-# Add a route for "" (which corresponds to /word_lesson)
-@bp.route("")
+
+# MODIFIED: The route now handles the language parameter and passes all necessary data.
 @bp.route("/")
 def show_lesson():
-    """Renders a single word lesson page."""
-    lesson_data = get_word_lesson()
-    return render_template("word_lesson.html", lesson=lesson_data)
+    """Renders the detailed word lesson page."""
+    # Get the language from the URL, e.g., /word_lesson?lang=ar
+    lang_code = request.args.get('lang', 'en')
+    
+    # Load all data required by the template for this language.
+    lang_config = get_lang_config(lang_code)
+    translations = get_translations(lang_code)
+    lesson_data = get_random_lesson(lang_code)
+    
+    # Pass everything to the template for rendering.
+    return render_template(
+        "word_lesson.html",
+        lesson=lesson_data,
+        lang_config=lang_config,
+        lang_code=lang_code,
+        t=translations
+    )
