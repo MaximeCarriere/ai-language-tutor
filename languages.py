@@ -205,6 +205,33 @@ TRANSLATIONS = {
         "create_story_button": "Weave My Story!",
         "ai_story_header": "Here's Your Story!",
         "read_story_button": "Read it to Me",
+        
+        "lesson_button": "Lesson",
+        "draw_button": "Draw",
+        
+        "words_hub_title": "Word Activities",
+        "word_lesson_link": "Word Lessons",
+        "word_lesson_desc": "Learn new words with examples and sounds.",
+        "word_exercise_link": "Word Quiz",
+        "word_exercise_desc": "Match the picture to the correct word.",
+        "describe_image_link": "Describe an Object",
+        "describe_image_desc": "Upload a photo and let the AI tell you what it is.",
+        
+        # --- Sentences Hub ---
+        "sentences_hub_title": "Sentence Activities",
+        "story_weaver_link": "Story Weaver",
+        "story_weaver_desc": "Create a story from pictures.",
+        "echo_writer_link": "Echo Writer",
+        "echo_writer_desc": "Speak and see your words appear.",
+
+        # --- Echo Writer Page ---
+        "echo_writer_title": "Echo Writer",
+        "echo_writer_instruction": "Press the button, speak a sentence, and press it again to see what you said!",
+        "echo_writer_status_ready": "Ready to Record",
+        "echo_writer_status_recording": "Recording... Press to stop.",
+        "echo_writer_status_processing": "Processing your voice...",
+        "echo_writer_status_mic_error": "Microphone access denied.",
+        "echo_writer_result_header": "You said:"
 
 
     },
@@ -266,6 +293,10 @@ TRANSLATIONS = {
         "create_story_button": "احبك قصتي!",
         "ai_story_header": "ها هي قصتك!",
         "read_story_button": "اقرأها لي",
+        
+        "lesson_button": "درس",
+        "draw_button": "ارسم",
+        
     },
     "prs": {
         # --- Translations are incomplete, you would fill these in ---
@@ -325,6 +356,8 @@ TRANSLATIONS = {
         "create_story_button": "داستانم را بباف!",
         "ai_story_header": "این داستان شماست!",
         "read_story_button": "برایم بخوان",
+        "lesson_button": "درس",
+        "draw_button": "رسم",
     }
 }
 

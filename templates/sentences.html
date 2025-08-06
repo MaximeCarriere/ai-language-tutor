@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="{{ lang_code }}" dir="{{ lang_config.direction }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t.sentences_hub_title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: {{ lang_config.font | safe }}; background-color: #f0f4f8; color: #34495e; margin: 0; padding: 24px; }
+        .main-container { max-width: 800px; margin: 0 auto; display: grid; gap: 24px; }
+        .header { text-align: center; }
+        h1 { color: #2c3e50; font-size: 2.5em; margin: 0; }
+        .home-link { display: inline-block; margin-top: 8px; color: #3498db; text-decoration: none; font-weight: 700; }
+        .activity-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media (min-width: 768px) { .activity-grid { grid-template-columns: 1fr 1fr; } }
+        .activity-card { background: #ffffff; border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); text-align: center; text-decoration: none; color: #34495e; transition: all 0.2s ease; }
+        .activity-card:hover { transform: translateY(-5px); box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1); }
+        .activity-card .icon { font-size: 4em; line-height: 1; }
+        .activity-card h2 { color: #2c3e50; margin: 16px 0 8px 0; }
+        .activity-card p { margin: 0; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>{{ t.sentences_hub_title }}</h1>
+            <a href="/?lang={{ lang_code }}" class="home-link">← {{ t.back_to_home }}</a>
+        </div>
+
+        <div class="activity-grid">
+            <a href="/story?lang={{ lang_code }}" class="activity-card">
+                <div class="icon">🪄</div>
+                <h2>{{ t.story_weaver_link }}</h2>
+                <p>{{ t.story_weaver_desc }}</p>
+            </a>
+
+            <a href="/echo_writer?lang={{ lang_code }}" class="activity-card">
+                <div class="icon">✍️</div>
+                <h2>{{ t.echo_writer_link }}</h2>
+                <p>{{ t.echo_writer_desc }}</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

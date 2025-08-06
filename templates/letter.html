@@ -1,283 +1,80 @@
 <!doctype html>
 <html lang="{{ lang_code }}" dir="{{ lang_config.direction }}">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ t.letter_practice }}</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-
     <style>
         *, *::before, *::after { box-sizing: border-box; }
-
-        body {
-            font-family: {{ lang_config.font | safe }};
-            background-color: #f0f4f8;
-            color: #34495e;
-            margin: 0;
-            padding: 24px;
-        }
-
-        .main-container {
-            max-width: 600px;
-            margin: 0 auto;
-            display: grid;
-            gap: 24px;
-        }
-
-        .header {
-            text-align: center;
-        }
-
-        h1 {
-            color: #2c3e50;
-            font-size: 2.5em;
-            margin: 0;
-        }
-
-        h2 {
-            color: #2c3e50;
-            margin-top: 0;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 8px;
-        }
-
-        .home-link {
-            display: inline-block;
-            margin-top: 8px;
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .card {
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        }
-
-        .alphabet {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-        }
-
-        .letter-box {
-            width: 45px;
-            height: 45px;
-            border: 2px solid #dfe6e9;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.3em;
-            font-weight: 700;
-            user-select: none;
-            transition: all 0.2s ease;
-        }
-
-        .letter-box:hover {
-            border-color: #3498db;
-            color: #3498db;
-        }
-
-        .letter-box.selected {
-            background: #3498db;
-            border-color: #3498db;
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        .form-group label {
-            display: block;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        input[type="text"] {
-            font-family: inherit;
-            font-size: 1.1em;
-            padding: 12px;
-            border-radius: 12px;
-            border: 2px solid #ccc;
-            width: 100%;
-        }
-
-        .button {
-            font-family: 'Nunito', sans-serif;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 1.1em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.1s ease-in-out;
-            width: 100%;
-        }
-
-        .button-submit {
-            background-color: #2ecc71;
-            box-shadow: 0 4px 0 #27ae60;
-        }
-        .button-submit:hover { background-color: #2abd69; transform: translateY(-1px); box-shadow: 0 5px 0 #27ae60; }
-        .button-submit:active { transform: translateY(1px); box-shadow: 0 3px 0 #27ae60; }
-        
-        pre {
-            background-color: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        /* --- ADDED: Styles for the new 'Go to Lesson' button --- */
-        .lesson-link-button {
-            display: inline-block;
-            text-decoration: none;
-            background-color: #e67e22;
-            box-shadow: 0 4px 0 #d35400;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-top: 16px;
-            text-align: center;
-            visibility: hidden; /* Hidden by default */
-            transition: all 0.2s ease;
-        }
-        .lesson-link-button:hover {
-            background-color: #d8741b;
-            transform: translateY(-1px);
-        }
-        .lesson-link-button.visible {
-            visibility: visible;
-        }
-
+        body { font-family: {{ lang_config.font | safe }}; background-color: #f0f4f8; color: #34495e; margin: 0; padding: 24px; }
+        .main-container { max-width: 900px; margin: 0 auto; display: grid; gap: 24px; }
+        .header { text-align: center; }
+        h1 { color: #2c3e50; font-size: 2.5em; margin: 0; }
+        .home-link { display: inline-block; margin-top: 8px; color: #3498db; text-decoration: none; font-weight: 700; }
+        .card { background: #ffffff; border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); }
+        .alphabet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 16px; }
+        .letter-card { border: 2px solid #ecf0f1; border-radius: 16px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s ease; }
+        .letter-card:hover { border-color: #3498db; transform: translateY(-4px); box-shadow: 0 8px 15px rgba(0,0,0,0.06); }
+        .letter-char { font-size: 4em; font-weight: 800; color: #2c3e50; }
+        .letter-actions { margin-top: 12px; display: flex; justify-content: center; gap: 8px; }
+        .action-btn { font-family: 'Nunito', sans-serif; text-decoration: none; font-weight: 700; font-size: 0.9em; padding: 6px 12px; border-radius: 8px; transition: background-color 0.2s; }
+        .btn-lesson { background-color: #3498db; color: white; }
+        .btn-draw { background-color: #9b59b6; color: white; }
     </style>
 </head>
 <body>
     <div class="main-container">
-
         <div class="header">
             <h1>{{ t.letter_practice }}</h1>
             <a href="/?lang={{ lang_code }}" class="home-link">← {{ t.back_to_home }}</a>
         </div>
 
         <div class="card">
-            <h2>{{ t.letter_practice }}</h2>
-            <div class="alphabet" id="alphabet">
-                {% for ch in lang_config.alphabet %}
-                  <div class="letter-box" data-letter="{{ ch }}">{{ ch }}</div>
+            <div class="alphabet-grid">
+                {% for char in lang_config.alphabet %}
+                <div class="letter-card" data-letter="{{ char }}">
+                    <div class="letter-char">{{ char }}</div>
+                    <div class="letter-actions">
+                        <a href="/letter_lesson?letter={{ char }}&lang={{ lang_code }}" class="action-btn btn-lesson">{{ t.lesson_button }}</a>
+                        <a href="/letter_drawing?letter={{ char }}&lang={{ lang_code }}" class="action-btn btn-draw">{{ t.draw_button }}</a>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
-            <a href="#" id="go-to-lesson-btn" class="lesson-link-button"></a>
         </div>
-
-        <div class="card">
-            <h2>{{ t.practice_typing }}</h2>
-            <form method="post" action="?lang={{ lang_code }}">
-                <div class="form-group">
-                    <label for="letter-input">{{ t.selected_letter }}</label>
-                    <input type="text" id="letter-input" name="letter" value="{{ letter }}" readonly style="background:#eee; text-align:center; font-weight:bold; font-size:1.5em;">
-                </div>
-                <div class="form-group">
-                    <label for="attempt-input">{{ t.your_attempt_label }}</label>
-                    <input type="text" id="attempt-input" name="attempt" placeholder="" value="{{ attempt }}" autocomplete="off" autofocus>
-                </div>
-                <div>
-                    <button type="submit" class="button button-submit">{{ t.check_my_typing }}</button>
-                </div>
-            </form>
-        </div>
-
-        {% if structured or raw %}
-        <div class="card">
-            <h2>{{ t.teachers_feedback }}</h2>
-            {% if structured %}
-                <pre>{{ structured | tojson(indent=2) }}</pre>
-            {% else %}
-                <pre>{{ raw }}</pre>
-            {% endif %}
-        </div>
-        {% endif %}
     </div>
 
     <script>
-        const langCode = "{{ lang_code }}";
+        // TTS for clicking on the letter card
         const langConfig = {{ lang_config | tojson }};
-        const t = {{ t | tojson }};
-
-        const alphabetDiv = document.getElementById("alphabet");
-        const letterInput = document.getElementById("letter-input");
-        const attemptInput = document.getElementById("attempt-input");
-        // ADDED: Get a reference to the new button
-        const goToLessonBtn = document.getElementById('go-to-lesson-btn');
-
-        async function fetchPronunciation(letter) {
-            try {
-                // Corrected the URL to include the blueprint prefix
-                const resp = await fetch(`/letter/letter_sound?letter=${encodeURIComponent(letter)}&lang=${langCode}`);
-                if (!resp.ok) return `The letter ${letter}.`;
-                const data = await resp.json();
-                return data.speak_text;
-            } catch (e) {
-                console.warn("Failed to fetch pronunciation:", e);
-                return `The letter ${letter}.`;
-            }
-        }
-        
-        function selectLetter(letter) {
-            // Visual selection
-            document.querySelectorAll(".letter-box").forEach(b => b.classList.remove("selected"));
-            const targetBox = document.querySelector(`.letter-box[data-letter="${letter}"]`);
-            if(targetBox) {
-                targetBox.classList.add("selected");
-            }
-            
-            // Update input
-            if (letterInput) letterInput.value = letter;
-            
-            // Focus on the typing area
-            if(attemptInput) attemptInput.focus();
-
-            // ADDED: Update and show the "Go to Lesson" button
-            if (goToLessonBtn) {
-                goToLessonBtn.href = `/letter_lesson?letter=${encodeURIComponent(letter)}&lang=${langCode}`;
-                goToLessonBtn.textContent = t.go_to_lesson_button.replace('{letter}', letter);
-                goToLessonBtn.classList.add('visible');
-            }
-        }
-
-        alphabetDiv.querySelectorAll(".letter-box").forEach(box => {
-            const letter = box.dataset.letter;
-            box.addEventListener("click", async () => {
-                selectLetter(letter);
-
-                const speakText = await fetchPronunciation(letter);
-                if ('speechSynthesis' in window) {
-                    const utter = new SpeechSynthesisUtterance(speakText);
-                    utter.lang = langConfig.code;
-                    window.speechSynthesis.cancel();
-                    window.speechSynthesis.speak(utter);
+        document.querySelectorAll('.letter-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Only play sound if user clicks the character, not the buttons
+                if (e.target.classList.contains('letter-char')) {
+                    const letter = card.dataset.letter;
+                    speakLetter(letter);
                 }
             });
         });
 
-        // Initialize selection on load
-        (() => {
-            const initial = "{{ letter }}";
-            selectLetter(initial);
-        })();
+        async function speakLetter(letter) {
+            try {
+                const langCode = "{{ lang_code }}";
+                const resp = await fetch(`/letter/letter_sound?letter=${encodeURIComponent(letter)}&lang=${langCode}`);
+                if (!resp.ok) return;
+                const data = await resp.json();
+                const utter = new SpeechSynthesisUtterance(data.speak_text);
+                utter.lang = langConfig.code;
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utter);
+            } catch (e) {
+                console.warn("TTS failed:", e);
+            }
+        }
     </script>
 </body>
 </html>

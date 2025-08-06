@@ -3,7 +3,7 @@ import random
 from flask import Blueprint, render_template, request
 from languages import get_lang_config, get_translations, get_vocabulary_data
 
-bp = Blueprint("word_exercise", __name__, template_folder="../templates")
+bp = Blueprint("word_quiz", __name__, template_folder="../templates")
 
 
 # REMOVED: The hard-coded English word lists are no longer needed here.

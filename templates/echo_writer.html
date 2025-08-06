@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="{{ lang_code }}" dir="{{ lang_config.direction }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t.echo_writer_title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: {{ lang_config.font | safe }}; background-color: #f0f4f8; color: #34495e; margin: 0; padding: 24px; }
+        .main-container { max-width: 700px; margin: 0 auto; display: grid; gap: 24px; }
+        .header { text-align: center; }
+        h1 { color: #2c3e50; font-size: 2.5em; margin: 0; }
+        .home-link { display: inline-block; margin-top: 8px; color: #3498db; text-decoration: none; font-weight: 700; }
+        .card { background: #ffffff; border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); text-align: center; }
+        .instructions { color: #7f8c8d; font-size: 1.1em; }
+        .recorder-controls { margin: 24px 0; }
+        .record-button { width: 100px; height: 100px; border-radius: 50%; border: none; background-color: #e74c3c; color: white; font-size: 3em; cursor: pointer; transition: all 0.2s ease; }
+        .record-button.is-recording { background-color: #c0392b; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
+        .status { margin-top: 16px; font-weight: 700; min-height: 24px; }
+        .result-box { margin-top: 24px; background-color: #ecf0f1; border-radius: 16px; padding: 20px; text-align: left; min-height: 100px; }
+        .result-box h2 { margin-top: 0; font-size: 1.5em; text-align: left; }
+        .result-box p { font-size: 1.8em; line-height: 1.6; margin: 0; }
+        .result-box .error { color: #c0392b; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>{{ t.echo_writer_title }}</h1>
+            <a href="/?lang={{ lang_code }}" class="home-link">← {{ t.back_to_home }}</a>
+        </div>
+
+        <div class="card">
+            <p class="instructions">{{ t.echo_writer_instruction }}</p>
+            <div class="recorder-controls">
+                <button id="record-button" class="record-button">🎤</button>
+            </div>
+            <div id="status" class="status">{{ t.echo_writer_status_ready }}</div>
+        </div>
+
+        {% if result %}
+        <div class="card">
+            <div class="result-box">
+                <h2>{{ t.echo_writer_result_header }}</h2>
+                {% if result.error %}
+                    <p class="error">{{ result.error }}</p>
+                {% else %}
+                    <p>{{ result.text }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const recordButton = document.getElementById('record-button');
+        const statusElement = document.getElementById('status');
+        const t = {{ t | tojson }};
+        let mediaRecorder;
+        let audioChunks = [];
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    audioChunks = [];
+                    submitAudio(audioBlob);
+                };
+
+                mediaRecorder.start();
+                recordButton.classList.add('is-recording');
+                statusElement.textContent = t.echo_writer_status_recording;
+            } catch (err) {
+                console.error("Error accessing microphone:", err);
+                statusElement.textContent = t.echo_writer_status_mic_error;
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                recordButton.classList.remove('is-recording');
+                statusElement.textContent = t.echo_writer_status_processing;
+            }
+        }
+        
+        // This function now uses a standard form submission
+        function submitAudio(audioBlob) {
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'recording.webm');
+            
+            // Create a temporary form and submit it. The browser will handle the
+            // POST request and follow the redirect from the server automatically.
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.enctype = 'multipart/form-data';
+            form.action = '?lang={{ lang_code }}';
+
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.name = 'audio';
+
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(new File([audioBlob], 'recording.webm'));
+            fileInput.files = dataTransfer.files;
+            
+            form.appendChild(fileInput);
+            document.body.appendChild(form);
+            form.style.display = 'none'; // Hide the form
+            form.submit();
+        }
+
+        recordButton.addEventListener('click', () => {
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        });
+    </script>
+</body>
+</html>
