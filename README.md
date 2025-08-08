@@ -2,7 +2,7 @@
 
 **An Offline-First, AI-Powered Literacy Tool for Education in Crisis**
 
-[![Gemma AI Challenge](https://img.shields.io/badge/Made%20for-Gemma%20AI%20for%20Impact%20Challenge-blueviolet)](https://www.kaggle.com/competitions/google-ai-for-impact-challenge)
+[![Gemma AI Challenge](https://img.shields.io/badge/Made%20for-Gemma%20AI%20for%20Impact%20Challenge-blueviolet)]([https://www.kaggle.com/competitions/google-ai-for-impact-challenge](https://www.kaggle.com/competitions/google-gemma-3n-hackathon/overview))
 [![Python](https://img.shields.io/badge/Python-3.9+-blue?logo=python)](https://www.python.org/)
 [![Ollama](https://img.shields.io/badge/Ollama-Local%20AI-lightgrey?logo=ollama)](https://ollama.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
